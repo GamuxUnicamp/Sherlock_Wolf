@@ -2,6 +2,7 @@ extends Node
 
 const SERVER_KEY = "sherlockwolfpartida"
 const MAIN_PATH = "res://scenes/Main.tscn"
+const SERVER_PATH = "res://scenes/ServerLobby.tscn"
 
 const BROADCAST_IP = "255.255.255.255"
 const SERVER_PORT = 31451
@@ -135,9 +136,13 @@ remote func register_player(info):
 #Função para se desconectar da partida
 func disconnect_player():
 	player_list = {}
-	creating_match = false
+	clear_servers()
 	get_tree().set_network_peer(null)
-	get_tree().change_scene(MAIN_PATH)
+	if creating_match:
+		creating_match = false
+		get_tree().change_scene(MAIN_PATH)
+	else:
+		get_tree().change_scene(SERVER_PATH)
 
 #Getter para a lista de servidores
 func get_servers():
