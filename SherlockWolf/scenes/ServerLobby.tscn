@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://scripts/ServerLobby.gd" type="Script" id=1]
 [ext_resource path="res://resources/Antonio-Regular.ttf" type="DynamicFontData" id=2]
@@ -8,26 +8,14 @@ size = 45
 font_data = ExtResource( 2 )
 
 [sub_resource type="DynamicFont" id=2]
-size = 35
+size = 30
 font_data = ExtResource( 2 )
 
 [sub_resource type="DynamicFont" id=3]
-size = 25
-font_data = ExtResource( 2 )
-
-[sub_resource type="DynamicFont" id=4]
-size = 30
-font_data = ExtResource( 2 )
-
-[sub_resource type="DynamicFont" id=5]
-size = 30
-font_data = ExtResource( 2 )
-
-[sub_resource type="DynamicFont" id=6]
 size = 35
 font_data = ExtResource( 2 )
 
-[sub_resource type="DynamicFont" id=7]
+[sub_resource type="DynamicFont" id=4]
 size = 30
 font_data = ExtResource( 2 )
 
@@ -52,374 +40,16 @@ custom_fonts/font = SubResource( 1 )
 custom_colors/font_color = Color( 0.109804, 0.109804, 0.109804, 1 )
 text = "Partidas disponíveis:"
 
-[node name="ServerList" type="Control" parent="."]
-editor/display_folded = true
-anchor_left = 0.5
-anchor_right = 0.5
-margin_left = -20.0
-margin_top = 129.0
-margin_right = 20.0
-margin_bottom = 169.0
+[node name="ServerList" type="ScrollContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 28.0
+margin_top = 83.0
+margin_right = -30.0
+margin_bottom = -98.0
+scroll_horizontal_enabled = false
 
-[node name="1" type="Control" parent="ServerList"]
-editor/display_folded = true
-visible = false
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-margin_left = -20.0
-margin_top = -20.0
-margin_right = 20.0
-margin_bottom = 20.0
-
-[node name="ColorRect" type="ColorRect" parent="ServerList/1"]
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-margin_left = -259.0
-margin_top = -65.0
-margin_right = 260.0
-margin_bottom = 52.0
-color = Color( 0.607843, 0.607843, 0.607843, 1 )
-
-[node name="Label" type="Label" parent="ServerList/1"]
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-margin_left = -243.5
-margin_top = -44.0
-margin_right = -110.5
-margin_bottom = 8.0
-custom_fonts/font = SubResource( 2 )
-text = "Partida de"
-
-[node name="Name" type="Label" parent="ServerList/1"]
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-margin_left = -101.0
-margin_top = -44.0
-margin_right = 143.0
-margin_bottom = 8.0
-custom_fonts/font = SubResource( 2 )
-text = "Jogador"
-clip_text = true
-
-[node name="Ip" type="Label" parent="ServerList/1"]
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-margin_left = -239.0
-margin_top = 6.0
-margin_right = -89.0
-margin_bottom = 43.0
-custom_fonts/font = SubResource( 3 )
-text = "000,000,000,000"
-
-[node name="Ok1" type="Button" parent="ServerList/1"]
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-margin_left = 155.5
-margin_top = -50.5
-margin_right = 250.5
-margin_bottom = 40.5
-custom_fonts/font = SubResource( 4 )
-text = "Entrar"
-
-[node name="2" type="Control" parent="ServerList"]
-editor/display_folded = true
-visible = false
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-margin_left = -20.0
-margin_top = 116.0
-margin_right = 20.0
-margin_bottom = 156.0
-
-[node name="ColorRect" type="ColorRect" parent="ServerList/2"]
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-margin_left = -259.0
-margin_top = -65.0
-margin_right = 260.0
-margin_bottom = 52.0
-color = Color( 0.607843, 0.607843, 0.607843, 1 )
-
-[node name="Label" type="Label" parent="ServerList/2"]
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-margin_left = -243.5
-margin_top = -44.0
-margin_right = -110.5
-margin_bottom = 8.0
-custom_fonts/font = SubResource( 2 )
-text = "Partida de"
-
-[node name="Name" type="Label" parent="ServerList/2"]
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-margin_left = -101.0
-margin_top = -44.0
-margin_right = 143.0
-margin_bottom = 8.0
-custom_fonts/font = SubResource( 2 )
-text = "Jogador"
-clip_text = true
-
-[node name="Ip" type="Label" parent="ServerList/2"]
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-margin_left = -239.0
-margin_top = 6.0
-margin_right = -89.0
-margin_bottom = 43.0
-custom_fonts/font = SubResource( 3 )
-text = "000,000,000,000"
-
-[node name="Ok2" type="Button" parent="ServerList/2"]
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-margin_left = 155.5
-margin_top = -50.5
-margin_right = 250.5
-margin_bottom = 40.5
-custom_fonts/font = SubResource( 4 )
-text = "Entrar"
-
-[node name="3" type="Control" parent="ServerList"]
-editor/display_folded = true
-visible = false
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-margin_left = -20.0
-margin_top = 252.0
-margin_right = 20.0
-margin_bottom = 292.0
-
-[node name="ColorRect" type="ColorRect" parent="ServerList/3"]
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-margin_left = -259.0
-margin_top = -65.0
-margin_right = 260.0
-margin_bottom = 52.0
-color = Color( 0.607843, 0.607843, 0.607843, 1 )
-
-[node name="Label" type="Label" parent="ServerList/3"]
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-margin_left = -243.5
-margin_top = -44.0
-margin_right = -110.5
-margin_bottom = 8.0
-custom_fonts/font = SubResource( 2 )
-text = "Partida de"
-
-[node name="Name" type="Label" parent="ServerList/3"]
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-margin_left = -101.0
-margin_top = -44.0
-margin_right = 143.0
-margin_bottom = 8.0
-custom_fonts/font = SubResource( 2 )
-text = "Jogador"
-clip_text = true
-
-[node name="Ip" type="Label" parent="ServerList/3"]
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-margin_left = -239.0
-margin_top = 6.0
-margin_right = -89.0
-margin_bottom = 43.0
-custom_fonts/font = SubResource( 3 )
-text = "000,000,000,000"
-
-[node name="Ok3" type="Button" parent="ServerList/3"]
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-margin_left = 155.5
-margin_top = -50.5
-margin_right = 250.5
-margin_bottom = 40.5
-custom_fonts/font = SubResource( 4 )
-text = "Entrar"
-
-[node name="4" type="Control" parent="ServerList"]
-editor/display_folded = true
-visible = false
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-margin_left = -20.0
-margin_top = 387.0
-margin_right = 20.0
-margin_bottom = 427.0
-
-[node name="ColorRect" type="ColorRect" parent="ServerList/4"]
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-margin_left = -259.0
-margin_top = -65.0
-margin_right = 260.0
-margin_bottom = 52.0
-color = Color( 0.607843, 0.607843, 0.607843, 1 )
-
-[node name="Label" type="Label" parent="ServerList/4"]
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-margin_left = -243.5
-margin_top = -44.0
-margin_right = -110.5
-margin_bottom = 8.0
-custom_fonts/font = SubResource( 2 )
-text = "Partida de"
-
-[node name="Name" type="Label" parent="ServerList/4"]
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-margin_left = -101.0
-margin_top = -44.0
-margin_right = 143.0
-margin_bottom = 8.0
-custom_fonts/font = SubResource( 2 )
-text = "Jogador"
-clip_text = true
-
-[node name="Ip" type="Label" parent="ServerList/4"]
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-margin_left = -239.0
-margin_top = 6.0
-margin_right = -89.0
-margin_bottom = 43.0
-custom_fonts/font = SubResource( 3 )
-text = "000,000,000,000"
-
-[node name="Ok4" type="Button" parent="ServerList/4"]
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-margin_left = 155.5
-margin_top = -50.5
-margin_right = 250.5
-margin_bottom = 40.5
-custom_fonts/font = SubResource( 4 )
-text = "Entrar"
-
-[node name="5" type="Control" parent="ServerList"]
-editor/display_folded = true
-visible = false
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-margin_left = -20.0
-margin_top = 525.0
-margin_right = 20.0
-margin_bottom = 565.0
-
-[node name="ColorRect" type="ColorRect" parent="ServerList/5"]
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-margin_left = -259.0
-margin_top = -65.0
-margin_right = 260.0
-margin_bottom = 52.0
-color = Color( 0.607843, 0.607843, 0.607843, 1 )
-
-[node name="Label" type="Label" parent="ServerList/5"]
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-margin_left = -243.5
-margin_top = -44.0
-margin_right = -110.5
-margin_bottom = 8.0
-custom_fonts/font = SubResource( 2 )
-text = "Partida de"
-
-[node name="Name" type="Label" parent="ServerList/5"]
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-margin_left = -101.0
-margin_top = -44.0
-margin_right = 143.0
-margin_bottom = 8.0
-custom_fonts/font = SubResource( 2 )
-text = "Jogador"
-clip_text = true
-
-[node name="Ip" type="Label" parent="ServerList/5"]
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-margin_left = -239.0
-margin_top = 6.0
-margin_right = -89.0
-margin_bottom = 43.0
-custom_fonts/font = SubResource( 3 )
-text = "000,000,000,000"
-
-[node name="Ok5" type="Button" parent="ServerList/5"]
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-margin_left = 155.5
-margin_top = -50.5
-margin_right = 250.5
-margin_bottom = 40.5
-custom_fonts/font = SubResource( 4 )
-text = "Entrar"
+[node name="VBoxContainer" type="VBoxContainer" parent="ServerList"]
 
 [node name="Back" type="Button" parent="."]
 anchor_left = 0.5
@@ -430,7 +60,7 @@ margin_left = -70.5
 margin_top = -71.0
 margin_right = 70.5
 margin_bottom = -10.0
-custom_fonts/font = SubResource( 5 )
+custom_fonts/font = SubResource( 2 )
 text = "Voltar"
 
 [node name="PopUp" type="Control" parent="."]
@@ -464,7 +94,7 @@ margin_left = -178.0
 margin_top = -83.0
 margin_right = 178.0
 margin_bottom = 25.0
-custom_fonts/font = SubResource( 6 )
+custom_fonts/font = SubResource( 3 )
 custom_colors/font_color = Color( 0.152941, 0.152941, 0.152941, 1 )
 text = "Ocorreu um erro ao tentar se conectar na partida"
 align = 1
@@ -481,12 +111,7 @@ margin_left = -70.0
 margin_top = 32.0
 margin_right = 70.0
 margin_bottom = 82.0
-custom_fonts/font = SubResource( 7 )
+custom_fonts/font = SubResource( 4 )
 text = "Voltar"
-[connection signal="pressed" from="ServerList/1/Ok1" to="." method="_on_Ok1_pressed"]
-[connection signal="pressed" from="ServerList/2/Ok2" to="." method="_on_Ok2_pressed"]
-[connection signal="pressed" from="ServerList/3/Ok3" to="." method="_on_Ok3_pressed"]
-[connection signal="pressed" from="ServerList/4/Ok4" to="." method="_on_Ok4_pressed"]
-[connection signal="pressed" from="ServerList/5/Ok5" to="." method="_on_Ok5_pressed"]
 [connection signal="pressed" from="Back" to="." method="_on_Back_pressed"]
 [connection signal="pressed" from="PopUp/PopUpOk" to="." method="_on_PopUpOk_pressed"]

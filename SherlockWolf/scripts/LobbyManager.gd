@@ -11,6 +11,7 @@ const MAX_PLAYERS = 16
 signal changed_lobby
 signal server_down
 signal match_found
+signal full_lobby
 
 #Lista de informações de outros jogadores e minhas informações
 var player_list = {}
@@ -132,6 +133,11 @@ remote func register_player(info):
 	var id = get_tree().get_rpc_sender_id()
 	player_list[id] = info
 	emit_signal("changed_lobby")
+	
+	#Se a partida estiver cheia, avisa o servidor para começar
+	if player_list.size() == 16:
+		emit_signal("full_lobby")
+	
 
 #Função para se desconectar da partida
 func disconnect_player():
@@ -139,6 +145,7 @@ func disconnect_player():
 	clear_servers()
 	get_tree().set_network_peer(null)
 	if creating_match:
+		socketUDP.close()
 		creating_match = false
 		get_tree().change_scene(MAIN_PATH)
 	else:

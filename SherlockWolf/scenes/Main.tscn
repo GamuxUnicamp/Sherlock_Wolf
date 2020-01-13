@@ -270,6 +270,56 @@ margin_right = 52.0
 margin_bottom = 86.0
 custom_fonts/font = SubResource( 4 )
 text = "OK"
+
+[node name="PopUpError2" type="Control" parent="."]
+editor/display_folded = true
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="Fade" type="ColorRect" parent="PopUpError2"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color( 0.117647, 0.117647, 0.117647, 0.207843 )
+
+[node name="Background" type="ColorRect" parent="PopUpError2"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -209.0
+margin_top = -92.0
+margin_right = 209.0
+margin_bottom = 92.0
+color = Color( 0.921569, 0.921569, 0.921569, 1 )
+
+[node name="Label" type="Label" parent="PopUpError2"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -174.0
+margin_top = -81.0
+margin_right = 175.0
+margin_bottom = 33.0
+custom_fonts/font = SubResource( 3 )
+custom_colors/font_color = Color( 0.129412, 0.129412, 0.129412, 1 )
+text = "O servidor foi fechado"
+align = 1
+valign = 1
+autowrap = true
+
+[node name="BtnError2" type="Button" parent="PopUpError2"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -52.0
+margin_top = 40.0
+margin_right = 52.0
+margin_bottom = 86.0
+custom_fonts/font = SubResource( 4 )
+text = "OK"
 [connection signal="pressed" from="Join" to="." method="_on_Join_pressed"]
 [connection signal="pressed" from="Host" to="." method="_on_Host_pressed"]
 [connection signal="pressed" from="PopUpJoin/BtnOkJoin" to="." method="_on_BtnOkJoin_pressed"]
@@ -277,3 +327,4 @@ text = "OK"
 [connection signal="pressed" from="PopUpHost/BtnOkHost" to="." method="_on_BtnOkHost_pressed"]
 [connection signal="pressed" from="PopUpHost/BtnCancelHost" to="." method="_on_BtnCancelHost_pressed"]
 [connection signal="pressed" from="PopUpError/BtnError" to="." method="_on_BtnError_pressed"]
+[connection signal="pressed" from="PopUpError2/BtnError2" to="." method="_on_BtnError2_pressed"]
