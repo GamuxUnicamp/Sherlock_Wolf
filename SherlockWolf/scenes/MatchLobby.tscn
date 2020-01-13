@@ -7,11 +7,11 @@
 size = 45
 font_data = ExtResource( 2 )
 
-[sub_resource type="DynamicFont" id=3]
+[sub_resource type="DynamicFont" id=2]
 size = 40
 font_data = ExtResource( 2 )
 
-[sub_resource type="DynamicFont" id=2]
+[sub_resource type="DynamicFont" id=3]
 size = 40
 font_data = ExtResource( 2 )
 
@@ -48,7 +48,7 @@ margin_left = -143.0
 margin_top = 98.0
 margin_right = 143.0
 margin_bottom = 166.0
-custom_fonts/font = SubResource( 3 )
+custom_fonts/font = SubResource( 2 )
 custom_colors/font_color = Color( 0.129412, 0.129412, 0.129412, 1 )
 align = 1
 valign = 1
@@ -62,7 +62,7 @@ margin_left = -143.0
 margin_top = 170.0
 margin_right = 143.0
 margin_bottom = 238.0
-custom_fonts/font = SubResource( 3 )
+custom_fonts/font = SubResource( 2 )
 custom_colors/font_color = Color( 0.129412, 0.129412, 0.129412, 1 )
 align = 1
 valign = 1
@@ -76,7 +76,7 @@ margin_left = -143.0
 margin_top = 242.0
 margin_right = 143.0
 margin_bottom = 310.0
-custom_fonts/font = SubResource( 3 )
+custom_fonts/font = SubResource( 2 )
 custom_colors/font_color = Color( 0.129412, 0.129412, 0.129412, 1 )
 align = 1
 valign = 1
@@ -90,7 +90,7 @@ margin_left = -143.0
 margin_top = 314.0
 margin_right = 143.0
 margin_bottom = 382.0
-custom_fonts/font = SubResource( 3 )
+custom_fonts/font = SubResource( 2 )
 custom_colors/font_color = Color( 0.129412, 0.129412, 0.129412, 1 )
 align = 1
 valign = 1
@@ -104,7 +104,7 @@ margin_left = -143.0
 margin_top = 386.0
 margin_right = 143.0
 margin_bottom = 454.0
-custom_fonts/font = SubResource( 3 )
+custom_fonts/font = SubResource( 2 )
 custom_colors/font_color = Color( 0.129412, 0.129412, 0.129412, 1 )
 align = 1
 valign = 1
@@ -114,7 +114,6 @@ clip_text = true
 [node name="Timer" type="Timer" parent="."]
 
 [node name="HostBtns" type="Control" parent="."]
-editor/display_folded = true
 visible = false
 anchor_left = 0.5
 anchor_top = 1.0
@@ -133,7 +132,7 @@ margin_left = -219.5
 margin_top = -60.0
 margin_right = -18.5
 margin_bottom = 8.0
-custom_fonts/font = SubResource( 2 )
+custom_fonts/font = SubResource( 3 )
 text = "Começar"
 
 [node name="Quit" type="Button" parent="HostBtns"]
@@ -145,7 +144,7 @@ margin_left = 6.5
 margin_top = -60.0
 margin_right = 207.5
 margin_bottom = 8.0
-custom_fonts/font = SubResource( 2 )
+custom_fonts/font = SubResource( 3 )
 text = "Sair"
 
 [node name="ClientBtns" type="Control" parent="."]
@@ -168,8 +167,9 @@ margin_left = -100.5
 margin_top = -60.0
 margin_right = 100.5
 margin_bottom = 8.0
-custom_fonts/font = SubResource( 2 )
+custom_fonts/font = SubResource( 3 )
 text = "Sair"
 [connection signal="timeout" from="Timer" to="." method="_on_Timer_timeout"]
+[connection signal="pressed" from="HostBtns/Start" to="." method="_on_Start_pressed"]
 [connection signal="pressed" from="HostBtns/Quit" to="." method="_on_Quit_pressed"]
 [connection signal="pressed" from="ClientBtns/Quit" to="." method="_on_Quit_pressed"]
