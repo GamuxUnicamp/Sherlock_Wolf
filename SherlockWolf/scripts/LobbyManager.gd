@@ -28,7 +28,6 @@ var quant_servers = 0
 var classes = {}
 var choice_sets = []
 var choice_masks = []
-var minimum_players = 5
 
 var PRNG = RandomNumberGenerator.new()
 
@@ -210,13 +209,17 @@ remote func register_player(info):
 	emit_signal("changed_lobby")
 
 func get_classes_for_current_match():
-	var choice_mask_index = player_list.size() - minimum_players
+	var choice_mask_index = 0
+	
+	if player_list.size() <= 5:
+		choice_mask_index = 0
+	if player_list.size() > 5:
+		choice_mask_index = player_list.size() - 5
+	
 	var class_list = []
 	
-	# Apenas para teste
-	choice_mask_index = 16 - 5
-	
 	var choice_mask = choice_masks[choice_mask_index]
+	#print(choice_mask)
 	
 	var choice_set_index = 0
 	for character in choice_mask:
@@ -225,11 +228,15 @@ func get_classes_for_current_match():
 		
 		# Choose (int_value) classes from (choice_set) randomly.
 		
+		#print(int_value)
+		#print(choice_set)
+		
 		var random_number = 0
 		for choice in range(int_value):
 			random_number = PRNG.randi_range(0, len(choice_set)-1)
 			var chosen_class = choice_set[random_number]
 			class_list.append(chosen_class)
+			#print(chosen_class)
 			
 		choice_set_index = choice_set_index + 1 # update choice set index for next iteration
 	
@@ -237,10 +244,14 @@ func get_classes_for_current_match():
 
 func class_distribution():
 	var class_list = get_classes_for_current_match()
-	print(class_list)
+	
+	var class_list_index = 0
+	for i in player_list:
+		player_list[i]["class"] = class_list[class_list_index]
+		class_list_index = class_list_index + 1
 
 func start_game():
-	class_distribution()
+	class_distribution() # atualiza lista de jogadores com as classes que lhes forem atribuídas	
 	rpc("change_all_screens")
 	get_tree().change_scene(CLASS_SELECTION_PATH) # para trocar a tela do servidor
 	
@@ -278,3 +289,12 @@ func get_players():
 #Getter para se está criando partida
 func get_creating():
 	return creating_match
+
+func get_classes():
+	return classes
+
+func get_choice_masks():
+	return choice_masks
+	
+func get_choice_sets():
+	return choice_sets
