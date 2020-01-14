@@ -3,7 +3,7 @@ extends Control
 const MAIN_PATH = "res://scenes/Main.tscn"
 const MATCH_PATH = "res://scenes/MatchLobby.tscn"
 
-onready var node_list = $PlayersList
+#onready var node_list = $PlayersList
 const player_tag = preload("res://resources/instances/PlayerTag.tscn")
 
 onready var node_list = $PlayersList/VBoxContainer

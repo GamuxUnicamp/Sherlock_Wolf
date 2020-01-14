@@ -46,7 +46,6 @@ scroll_horizontal_enabled = false
 [node name="Timer" type="Timer" parent="."]
 
 [node name="HostBtns" type="Control" parent="."]
-editor/display_folded = true
 visible = false
 anchor_left = 0.5
 anchor_top = 1.0
@@ -103,5 +102,6 @@ margin_bottom = 8.0
 custom_fonts/font = SubResource( 2 )
 text = "Sair"
 [connection signal="timeout" from="Timer" to="." method="_on_Timer_timeout"]
+[connection signal="pressed" from="HostBtns/Start" to="." method="_on_Start_pressed"]
 [connection signal="pressed" from="HostBtns/Quit" to="." method="_on_Quit_pressed"]
 [connection signal="pressed" from="ClientBtns/Quit" to="." method="_on_Quit_pressed"]

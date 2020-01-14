@@ -260,6 +260,7 @@ func class_distribution():
 
 func start_game():
 	class_distribution() # atualiza lista de jogadores com as classes que lhes forem atribuídas	
+	#print(player_list)
 	rpc("change_all_screens")
 	get_tree().change_scene(CLASS_SELECTION_PATH) # para trocar a tela do servidor
 	
