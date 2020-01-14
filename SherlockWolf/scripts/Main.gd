@@ -4,6 +4,7 @@ const SERVER_LOBBY = "res://scenes/ServerLobby.tscn"
 const MATCH_LOBBY = "res://scenes/MatchLobby.tscn"
 
 onready var popup_error = $PopUpError
+onready var popup_error2 = $PopUpError2
 
 onready var btn_join = $Join
 onready var popup_join = $PopUpJoin
@@ -12,6 +13,9 @@ onready var name_join = $PopUpJoin/Name
 onready var btn_host = $Host
 onready var popup_host = $PopUpHost
 onready var name_host = $PopUpHost/Name
+
+func _ready():
+	LobbyManager.connect("server_down", self, "_on_server_down")
 
 #Botão de procurar partida
 func _on_Join_pressed():
@@ -55,3 +59,11 @@ func _on_BtnCancelHost_pressed():
 #Botão do aviso de erro do servidor
 func _on_BtnError_pressed():
 	popup_error.set_visible(false)
+
+#Pegando o sinal do servidor ter fechado
+func _on_server_down():
+	popup_error2.set_visible(true)
+
+#Fechando a mensagem de erro
+func _on_BtnError2_pressed():
+	popup_error2.set_visible(false)
