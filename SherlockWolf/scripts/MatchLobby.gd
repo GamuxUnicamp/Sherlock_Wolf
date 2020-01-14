@@ -1,5 +1,9 @@
 extends Control
 
+const MAIN_PATH = "res://scenes/Main.tscn"
+const MATCH_PATH = "res://scenes/MatchLobby.tscn"
+
+onready var node_list = $PlayersList
 const player_tag = preload("res://resources/instances/PlayerTag.tscn")
 
 onready var node_list = $PlayersList/VBoxContainer
@@ -43,6 +47,9 @@ func clear_nodes():
 #Botão para sair
 func _on_Quit_pressed():
 	LobbyManager.disconnect_player()
+
+func _on_Start_pressed():
+	LobbyManager.start_game()
 
 #Timer para chamar novos jogadores
 func _on_Timer_timeout():
