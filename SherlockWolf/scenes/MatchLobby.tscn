@@ -1,14 +1,10 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://scripts/MatchLobby.gd" type="Script" id=1]
 [ext_resource path="res://resources/Antonio-Regular.ttf" type="DynamicFontData" id=2]
 
 [sub_resource type="DynamicFont" id=1]
 size = 45
-font_data = ExtResource( 2 )
-
-[sub_resource type="DynamicFont" id=3]
-size = 40
 font_data = ExtResource( 2 )
 
 [sub_resource type="DynamicFont" id=2]
@@ -36,80 +32,16 @@ custom_fonts/font = SubResource( 1 )
 custom_colors/font_color = Color( 0.117647, 0.117647, 0.117647, 1 )
 text = "Jogadores:"
 
-[node name="PlayersList" type="Control" parent="."]
-editor/display_folded = true
+[node name="PlayersList" type="ScrollContainer" parent="."]
 anchor_right = 1.0
 anchor_bottom = 1.0
+margin_left = 67.0
+margin_top = 83.0
+margin_right = -78.0
+margin_bottom = -88.0
+scroll_horizontal_enabled = false
 
-[node name="1" type="Label" parent="PlayersList"]
-anchor_left = 0.5
-anchor_right = 0.5
-margin_left = -143.0
-margin_top = 98.0
-margin_right = 143.0
-margin_bottom = 166.0
-custom_fonts/font = SubResource( 3 )
-custom_colors/font_color = Color( 0.129412, 0.129412, 0.129412, 1 )
-align = 1
-valign = 1
-autowrap = true
-clip_text = true
-
-[node name="2" type="Label" parent="PlayersList"]
-anchor_left = 0.5
-anchor_right = 0.5
-margin_left = -143.0
-margin_top = 170.0
-margin_right = 143.0
-margin_bottom = 238.0
-custom_fonts/font = SubResource( 3 )
-custom_colors/font_color = Color( 0.129412, 0.129412, 0.129412, 1 )
-align = 1
-valign = 1
-autowrap = true
-clip_text = true
-
-[node name="3" type="Label" parent="PlayersList"]
-anchor_left = 0.5
-anchor_right = 0.5
-margin_left = -143.0
-margin_top = 242.0
-margin_right = 143.0
-margin_bottom = 310.0
-custom_fonts/font = SubResource( 3 )
-custom_colors/font_color = Color( 0.129412, 0.129412, 0.129412, 1 )
-align = 1
-valign = 1
-autowrap = true
-clip_text = true
-
-[node name="4" type="Label" parent="PlayersList"]
-anchor_left = 0.5
-anchor_right = 0.5
-margin_left = -143.0
-margin_top = 314.0
-margin_right = 143.0
-margin_bottom = 382.0
-custom_fonts/font = SubResource( 3 )
-custom_colors/font_color = Color( 0.129412, 0.129412, 0.129412, 1 )
-align = 1
-valign = 1
-autowrap = true
-clip_text = true
-
-[node name="5" type="Label" parent="PlayersList"]
-anchor_left = 0.5
-anchor_right = 0.5
-margin_left = -143.0
-margin_top = 386.0
-margin_right = 143.0
-margin_bottom = 454.0
-custom_fonts/font = SubResource( 3 )
-custom_colors/font_color = Color( 0.129412, 0.129412, 0.129412, 1 )
-align = 1
-valign = 1
-autowrap = true
-clip_text = true
+[node name="VBoxContainer" type="VBoxContainer" parent="PlayersList"]
 
 [node name="Timer" type="Timer" parent="."]
 
