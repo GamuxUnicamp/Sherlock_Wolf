@@ -240,6 +240,8 @@ func get_classes_for_current_match():
 			
 		choice_set_index = choice_set_index + 1 # update choice set index for next iteration
 	
+	class_list.shuffle()
+	
 	return class_list
 
 func class_distribution():
