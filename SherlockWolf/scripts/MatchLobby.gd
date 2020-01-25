@@ -3,7 +3,6 @@ extends Control
 const MAIN_PATH = "res://scenes/Main.tscn"
 const MATCH_PATH = "res://scenes/MatchLobby.tscn"
 
-#onready var node_list = $PlayersList
 const player_tag = preload("res://resources/instances/PlayerTag.tscn")
 
 onready var node_list = $PlayersList/VBoxContainer
@@ -15,7 +14,9 @@ var player_list
 var creating_match
 
 func _ready():
+	# warning-ignore:return_value_discarded
 	LobbyManager.connect("changed_lobby", self, "_on_changed_lobby")
+	# warning-ignore:return_value_discarded
 	LobbyManager.connect("full_lobby", self, "_on_full_lobby")
 	#Checando se é cliente ou servidor
 	creating_match = LobbyManager.get_creating()
@@ -48,6 +49,7 @@ func clear_nodes():
 func _on_Quit_pressed():
 	LobbyManager.disconnect_player()
 
+#Botão para começar o jogo
 func _on_Start_pressed():
 	LobbyManager.start_game()
 
@@ -55,6 +57,6 @@ func _on_Start_pressed():
 func _on_Timer_timeout():
 	LobbyManager.find_player()
 
-#Chamar função de começar a partida
+#Chamar função de começar a partida se a sala estiver cheia
 func _on_full_lobby():
-	pass
+	LobbyManager.start_game()

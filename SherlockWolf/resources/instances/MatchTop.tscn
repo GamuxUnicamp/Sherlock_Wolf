@@ -1,0 +1,156 @@
+[gd_scene load_steps=10 format=2]
+
+[ext_resource path="res://scripts/MatchTop.gd" type="Script" id=1]
+[ext_resource path="res://resources/Antonio-Bold.ttf" type="DynamicFontData" id=2]
+[ext_resource path="res://resources/Antonio-Regular.ttf" type="DynamicFontData" id=3]
+
+[sub_resource type="DynamicFont" id=5]
+size = 35
+font_data = ExtResource( 2 )
+
+[sub_resource type="DynamicFont" id=6]
+font_data = ExtResource( 2 )
+
+[sub_resource type="DynamicFont" id=3]
+size = 28
+font_data = ExtResource( 2 )
+
+[sub_resource type="DynamicFont" id=4]
+size = 20
+font_data = ExtResource( 3 )
+
+[sub_resource type="DynamicFont" id=7]
+size = 20
+font_data = ExtResource( 3 )
+
+[sub_resource type="DynamicFont" id=8]
+size = 20
+font_data = ExtResource( 3 )
+
+[node name="Top" type="Control"]
+anchor_right = 1.0
+margin_bottom = 190.0
+script = ExtResource( 1 )
+
+[node name="Background" type="ColorRect" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color( 0.431373, 0.431373, 0.431373, 1 )
+
+[node name="TimeDay" type="Control" parent="."]
+editor/display_folded = true
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="Timer" type="Control" parent="TimeDay"]
+editor/display_folded = true
+margin_left = 25.0
+margin_top = 26.0
+margin_right = 105.0
+margin_bottom = 105.0
+
+[node name="ColorRect" type="ColorRect" parent="TimeDay/Timer"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color( 0.921569, 0.921569, 0.921569, 1 )
+
+[node name="Label" type="Label" parent="TimeDay/Timer"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -20.0
+margin_top = -26.0
+margin_right = 20.0
+margin_bottom = 26.0
+custom_fonts/font = SubResource( 5 )
+custom_colors/font_color = Color( 0.192157, 0.192157, 0.192157, 1 )
+text = "30"
+align = 1
+valign = 1
+
+[node name="Timer" type="Timer" parent="TimeDay/Timer"]
+
+[node name="Day" type="Control" parent="TimeDay"]
+editor/display_folded = true
+margin_left = 105.0
+margin_top = 26.0
+margin_right = 183.0
+margin_bottom = 45.0
+
+[node name="ColorRect" type="ColorRect" parent="TimeDay/Day"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color( 0.921569, 0.921569, 0.921569, 1 )
+
+[node name="Label" type="Label" parent="TimeDay/Day"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -20.0
+margin_top = -13.5
+margin_right = 20.0
+margin_bottom = 15.5
+custom_fonts/font = SubResource( 6 )
+custom_colors/font_color = Color( 0.192157, 0.192157, 0.192157, 1 )
+text = "Dia 1"
+align = 1
+valign = 1
+
+[node name="CurrentPhase" type="Label" parent="."]
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+margin_left = 195.0
+margin_top = -69.0
+margin_right = -89.0
+margin_bottom = -27.0
+custom_fonts/font = SubResource( 3 )
+text = "Descubra sua classe"
+align = 2
+valign = 1
+
+[node name="NextPhase" type="Label" parent="."]
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+margin_left = 195.0
+margin_top = -35.0
+margin_right = -89.0
+margin_bottom = -6.0
+custom_fonts/font = SubResource( 4 )
+text = "Noite"
+align = 2
+valign = 1
+
+[node name="AliveBtn" type="Button" parent="."]
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_top = -43.0
+margin_right = -288.0
+custom_fonts/font = SubResource( 7 )
+text = "Vivos"
+
+[node name="DeadBtn" type="Button" parent="."]
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 288.0
+margin_top = -43.0
+custom_fonts/font = SubResource( 8 )
+text = "Eliminados"
+
+[node name="PauseBtn" type="Button" parent="."]
+anchor_left = 1.0
+anchor_right = 1.0
+margin_left = -59.0
+margin_top = 39.0
+margin_right = -19.0
+margin_bottom = 79.0
+text = "||"
+[connection signal="timeout" from="TimeDay/Timer/Timer" to="." method="_on_Timer_timeout"]
+[connection signal="pressed" from="AliveBtn" to="." method="_on_AliveBtn_pressed"]
+[connection signal="pressed" from="DeadBtn" to="." method="_on_DeadBtn_pressed"]
+[connection signal="pressed" from="PauseBtn" to="." method="_on_PauseBtn_pressed"]

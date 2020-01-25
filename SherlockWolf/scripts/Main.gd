@@ -6,15 +6,14 @@ const MATCH_LOBBY = "res://scenes/MatchLobby.tscn"
 onready var popup_error = $PopUpError
 onready var popup_error2 = $PopUpError2
 
-onready var btn_join = $Join
 onready var popup_join = $PopUpJoin
 onready var name_join = $PopUpJoin/Name
 
-onready var btn_host = $Host
 onready var popup_host = $PopUpHost
 onready var name_host = $PopUpHost/Name
 
 func _ready():
+	# warning-ignore:return_value_discarded
 	LobbyManager.connect("server_down", self, "_on_server_down")
 
 #Botão de procurar partida
@@ -29,6 +28,7 @@ func _on_BtnOkJoin_pressed():
 		return
 	
 	LobbyManager.set_name(p_name)
+	# warning-ignore:return_value_discarded
 	get_tree().change_scene(SERVER_LOBBY)
 
 #Cancelar na tela de procurar partida
@@ -48,6 +48,7 @@ func _on_BtnOkHost_pressed():
 	
 	if LobbyManager.create_host():
 		LobbyManager.set_name(p_name)
+		# warning-ignore:return_value_discarded
 		get_tree().change_scene(MATCH_LOBBY)
 	else:
 		popup_error.set_visible(true)

@@ -11,6 +11,7 @@ onready var pop_up = $PopUp
 var server_list = {}
 
 func _ready():
+	# warning-ignore:return_value_discarded
 	LobbyManager.connect("match_found", self, "_on_match_found")
 	LobbyManager.find_match()
 
@@ -35,6 +36,7 @@ func clear_nodes():
 #Quando apertar um botão pra entrar em um servidor
 func join_match(server_ip):
 	if LobbyManager.join_match(server_ip):
+		# warning-ignore:return_value_discarded
 		get_tree().change_scene(MATCH_PATH)
 	else:
 		pop_up.set_visible(true)
@@ -42,6 +44,7 @@ func join_match(server_ip):
 #Botão para sair
 func _on_Back_pressed():
 	LobbyManager.stop_searching()
+	# warning-ignore:return_value_discarded
 	get_tree().change_scene(MAIN_PATH)
 
 #Botão do aviso

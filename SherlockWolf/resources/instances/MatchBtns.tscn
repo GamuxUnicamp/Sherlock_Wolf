@@ -1,0 +1,62 @@
+[gd_scene format=2]
+
+[node name="InfoBtn" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="OpenBtn" type="Button" parent="."]
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = -79.0
+margin_top = -82.0
+margin_right = -27.0
+margin_bottom = -29.0
+
+[node name="Buttons" type="Control" parent="."]
+editor/display_folded = true
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="Fade" type="ColorRect" parent="Buttons"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color( 0.117647, 0.117647, 0.117647, 0.207843 )
+
+[node name="CloseBtn" type="Button" parent="Buttons"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+flat = true
+
+[node name="ClassBtn" type="Button" parent="Buttons"]
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = -79.0
+margin_top = -82.0
+margin_right = -27.0
+margin_bottom = -29.0
+
+[node name="InfoBtn" type="Button" parent="Buttons"]
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = -79.0
+margin_top = -155.0
+margin_right = -27.0
+margin_bottom = -102.0
+
+[node name="NotesBtn" type="Button" parent="Buttons"]
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = -79.0
+margin_top = -228.0
+margin_right = -27.0
+margin_bottom = -175.0

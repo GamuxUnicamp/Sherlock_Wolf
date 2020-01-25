@@ -1,0 +1,191 @@
+[gd_scene load_steps=12 format=2]
+
+[ext_resource path="res://scripts/MatchPreparation.gd" type="Script" id=1]
+[ext_resource path="res://resources/Antonio-Regular.ttf" type="DynamicFontData" id=2]
+[ext_resource path="res://scripts/MatchTop.gd" type="Script" id=3]
+[ext_resource path="res://resources/Antonio-Bold.ttf" type="DynamicFontData" id=4]
+[ext_resource path="res://resources/instances/PopupQuit.tscn" type="PackedScene" id=5]
+
+[sub_resource type="DynamicFont" id=1]
+size = 35
+font_data = ExtResource( 2 )
+
+[sub_resource type="DynamicFont" id=2]
+size = 20
+font_data = ExtResource( 2 )
+
+[sub_resource type="DynamicFont" id=3]
+size = 35
+font_data = ExtResource( 4 )
+
+[sub_resource type="DynamicFont" id=4]
+font_data = ExtResource( 4 )
+
+[sub_resource type="DynamicFont" id=5]
+size = 28
+font_data = ExtResource( 4 )
+
+[sub_resource type="DynamicFont" id=6]
+size = 20
+font_data = ExtResource( 2 )
+
+[node name="Node" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource( 1 )
+
+[node name="Background" type="ColorRect" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color( 0.921569, 0.921569, 0.921569, 1 )
+
+[node name="Class" type="Control" parent="."]
+editor/display_folded = true
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_top = 184.0
+
+[node name="ClassSymbol" type="ColorRect" parent="Class"]
+anchor_left = 0.5
+anchor_right = 0.5
+margin_left = -215.0
+margin_top = 33.0
+margin_right = -175.0
+margin_bottom = 73.0
+
+[node name="ClassName" type="Label" parent="Class"]
+anchor_left = 0.5
+anchor_right = 0.5
+margin_left = -157.0
+margin_top = 28.0
+margin_right = 221.0
+margin_bottom = 80.0
+custom_fonts/font = SubResource( 1 )
+custom_colors/font_color = Color( 0.192157, 0.192157, 0.192157, 1 )
+text = "Nome da classe"
+valign = 1
+
+[node name="ClassDescription" type="Label" parent="Class"]
+anchor_left = 0.5
+anchor_right = 0.5
+margin_left = -212.0
+margin_top = 93.0
+margin_right = 221.0
+margin_bottom = 602.0
+custom_fonts/font = SubResource( 2 )
+custom_colors/font_color = Color( 0.192157, 0.192157, 0.192157, 1 )
+text = "Descrção da classe."
+align = 3
+autowrap = true
+
+[node name="Top" type="Control" parent="."]
+editor/display_folded = true
+anchor_right = 1.0
+margin_bottom = 190.0
+script = ExtResource( 3 )
+
+[node name="Background" type="ColorRect" parent="Top"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color( 0.431373, 0.431373, 0.431373, 1 )
+
+[node name="TimeDay" type="Control" parent="Top"]
+editor/display_folded = true
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="Timer" type="Control" parent="Top/TimeDay"]
+editor/display_folded = true
+margin_left = 25.0
+margin_top = 26.0
+margin_right = 105.0
+margin_bottom = 105.0
+
+[node name="ColorRect" type="ColorRect" parent="Top/TimeDay/Timer"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color( 0.921569, 0.921569, 0.921569, 1 )
+
+[node name="Label" type="Label" parent="Top/TimeDay/Timer"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -20.0
+margin_top = -26.0
+margin_right = 20.0
+margin_bottom = 26.0
+custom_fonts/font = SubResource( 3 )
+custom_colors/font_color = Color( 0.192157, 0.192157, 0.192157, 1 )
+text = "30"
+align = 1
+valign = 1
+
+[node name="Timer" type="Timer" parent="Top/TimeDay/Timer"]
+
+[node name="Day" type="Control" parent="Top/TimeDay"]
+editor/display_folded = true
+margin_left = 105.0
+margin_top = 26.0
+margin_right = 183.0
+margin_bottom = 45.0
+
+[node name="ColorRect" type="ColorRect" parent="Top/TimeDay/Day"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color( 0.921569, 0.921569, 0.921569, 1 )
+
+[node name="Label" type="Label" parent="Top/TimeDay/Day"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -20.0
+margin_top = -13.5
+margin_right = 20.0
+margin_bottom = 15.5
+custom_fonts/font = SubResource( 4 )
+custom_colors/font_color = Color( 0.192157, 0.192157, 0.192157, 1 )
+text = "Dia 1"
+align = 1
+valign = 1
+
+[node name="CurrentPhase" type="Label" parent="Top"]
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+margin_left = 154.0
+margin_top = -41.5
+margin_right = -77.0
+margin_bottom = 0.5
+custom_fonts/font = SubResource( 5 )
+text = "Descubra sua classe"
+align = 2
+valign = 1
+
+[node name="NextPhase" type="Label" parent="Top"]
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+margin_left = 154.0
+margin_top = -7.5
+margin_right = -77.0
+margin_bottom = 21.5
+custom_fonts/font = SubResource( 6 )
+text = "Noite"
+align = 2
+valign = 1
+
+[node name="PauseBtn" type="Button" parent="Top"]
+anchor_left = 1.0
+anchor_right = 1.0
+margin_left = -57.0
+margin_top = 19.0
+margin_right = -17.0
+margin_bottom = 59.0
+text = "||"
+
+[node name="PopupQuit" parent="." instance=ExtResource( 5 )]
+visible = false
+[connection signal="timeout" from="Top/TimeDay/Timer/Timer" to="Top" method="_on_Timer_timeout"]
+[connection signal="pressed" from="Top/PauseBtn" to="Top" method="_on_PauseBtn_pressed"]

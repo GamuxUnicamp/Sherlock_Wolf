@@ -3,7 +3,7 @@ extends Node
 const SERVER_KEY = "sherlockwolfpartida"
 const MAIN_PATH = "res://scenes/Main.tscn"
 const SERVER_PATH = "res://scenes/ServerLobby.tscn"
-const CLASS_SELECTION_PATH = "res://scenes/ClassSelection.tscn"
+const MATCH_PATH = "res://scenes/MatchPreparation.tscn"
 
 const BROADCAST_IP = "255.255.255.255"
 const SERVER_PORT = 31451
@@ -13,89 +13,34 @@ signal changed_lobby
 signal server_down
 signal match_found
 signal full_lobby
+signal refresh_list
 
 #Lista de informações de outros jogadores e minhas informações
 var player_list = {}
-var my_info = {"name": "John Doe", "class": ""}
+var my_info = {"name": "", "class": "", "alive" : true, "votes": 0, "message": ""}
 var creating_match = false
 var searching_match = false
+var showing_alive = true
+var game_running = false
 
 #Informações de servidores
 var socketUDP = PacketPeerUDP.new()
 var server_list = {}
 var quant_servers = 0
+var current_day = 0
+var paused = false
 
-# Distribuição de classes
+enum {NIGHT, DAY, VOTING, TRIAL}
+var current_phase
+
+#Distribuição de classes
 var classes = {}
 var choice_sets = []
 var choice_masks = []
-
 var PRNG = RandomNumberGenerator.new()
 
-func populate_class_maps():
-	# Classes da Cidade
-	classes["leader"] = {"skill": "", "alignment": "town"}
-	classes["detective"] = {"skill": "", "alignment": "town"}
-	classes["observer"] = {"skill": "", "alignment": "town"}
-	classes["messenger"] = {"skill": "", "alignment": "town"}
-	classes["hunter"] = {"skill": "", "alignment": "town"}
-	classes["captain"] = {"skill": "", "alignment": "town"}
-	classes["alchemist"] = {"skill": "", "alignment": "town"}
-	classes["guard"] = {"skill": "", "alignment": "town"}
-	
-	# Classes dos Lobisomens
-	classes["werewolf"] = {"skill": "", "alignment": "werewolves"}
-	classes["sorcerer"] = {"skill": "", "alignment": "werewolves"}
-	classes["elder"] = {"skill": "", "alignment": "werewolves"}
-	classes["mimic"] = {"skill": "", "alignment": "werewolves"}
-	classes["elder"] = {"skill": "", "alignment": "werewolves"}
-	classes["cultist"] = {"skill": "", "alignment": "werewolves"}
-	
-	# Classes Neutras
-	classes["fugitive"] = {"skill": "", "alignment": "neutral"}
-	classes["outsider"] = {"skill": "", "alignment": "neutral"}
-	classes["avenger"] = {"skill": "", "alignment": "neutral"}
-	classes["stalker"] = {"skill": "", "alignment": "neutral"}
-	classes["suicidal"] = {"skill": "", "alignment": "neutral"}
-	
-	choice_sets.append(["leader", "detective", "observer", "messenger"])
-	choice_sets.append(["leader", "detective", "hunter"])
-	choice_sets.append(["detective", "observer", "messenger"])
-	choice_sets.append(["captain", "hunter"])
-	choice_sets.append(["alchemist", "guard"])
-	choice_sets.append(["leader", "detective", "observer", "messenger", "hunter", "captain", "alchemist", "guard"])
-	choice_sets.append(["werewolf"])
-	choice_sets.append(["sorcerer", "elder", "mimic"])
-	choice_sets.append(["cultist"])
-	choice_sets.append(["fugitive", "outsider", "avenger", "stalker", "suicidal"])
-		
-	var choices_for_5_players  = "1001101100"
-	var choices_for_6_players  = "0111101100"
-	var choices_for_7_players  = "0111101101"
-	var choices_for_8_players  = "0111111101"
-	var choices_for_9_players  = "0111111111"
-	var choices_for_10_players = "0121111111"
-	var choices_for_11_players = "0121121111"
-	var choices_for_12_players = "0121121211"
-	var choices_for_13_players = "0121221211"
-	var choices_for_14_players = "0121221212"
-	var choices_for_15_players = "0121221222"
-	var choices_for_16_players = "0121231222"
-	
-	choice_masks.append(choices_for_5_players) #0 + 5 = 5
-	choice_masks.append(choices_for_6_players) #1
-	choice_masks.append(choices_for_7_players) #2
-	choice_masks.append(choices_for_8_players) #3
-	choice_masks.append(choices_for_9_players) #4
-	choice_masks.append(choices_for_10_players) #5
-	choice_masks.append(choices_for_11_players) #6
-	choice_masks.append(choices_for_12_players) #7
-	choice_masks.append(choices_for_13_players) #8
-	choice_masks.append(choices_for_14_players) #9
-	choice_masks.append(choices_for_15_players) #10
-	choice_masks.append(choices_for_16_players) #11 + 5 = 16
-	
-	PRNG.randomize()			
+func get_votes():
+	return player_list[get_tree().get_network_unique_id()]["votes"]
 
 ######### Servidor #########
 func create_host():
@@ -123,6 +68,7 @@ func find_match():
 	socketUDP.listen(SERVER_PORT, "0.0.0.0")
 	searching_match = true
 
+# warning-ignore:unused_argument
 func _process(delta):
 	if searching_match:
 		#Se tiver alguma mensagem, ler
@@ -164,13 +110,166 @@ func join_match(server_ip):
 	stop_searching()
 	return true
 
-######### Controle #########
+######### Distribuição de Classes #########
+func start_game():
+	class_distribution()
+	rpc("update_list", player_list)
+	rpc("enter_game")
+	game_running = true
+	# warning-ignore:return_value_discarded
+	get_tree().change_scene(MATCH_PATH)
+
+#Atualiza lista de jogadores com as classes que lhes forem atribuídas
+func class_distribution():
+	var class_list = get_classes_for_current_match()
+	var class_list_index = 0
+	for i in player_list:
+		player_list[i]["class"] = class_list[class_list_index]
+		class_list_index = class_list_index + 1
+
+func get_classes_for_current_match():
+	var choice_mask_index = 0
+	var class_list = []
+	
+	if player_list.size() <= 5:
+		choice_mask_index = 0
+	if player_list.size() > 5:
+		choice_mask_index = player_list.size() - 5
+	
+	var choice_mask = choice_masks[choice_mask_index]
+	
+	var choice_set_index = 0
+	for character in choice_mask:
+		var int_value = character.to_int()
+		var choice_set = choice_sets[choice_set_index]
+		
+		var random_number
+		# warning-ignore:unused_variable
+		for choice in range(int_value):
+			random_number = PRNG.randi_range(0, len(choice_set)-1)
+			var chosen_class = choice_set[random_number]
+			class_list.append(chosen_class)
+			PRNG.randomize()
+		
+		#Update choice set index for next iteration
+		choice_set_index = choice_set_index + 1 
+	
+	randomize()
+	class_list.shuffle()
+	return class_list
+
+remote func enter_game():
+	game_running = true
+	# warning-ignore:return_value_discarded
+	get_tree().change_scene(MATCH_PATH)
+
+######### Votação #########
+func add_vote(player_id):
+	#Adiciona o voto e atualiza a lista para os outros jogadores
+	player_list[player_id]["votes"] += 1
+	rpc("update_list", player_list)
+	emit_signal("refresh_list")
+	
+	#Testa se o número de votos é metade dos jogadores
+	if ceil(get_alive_players()/2) == player_list[player_id]["votes"]:
+		return true
+	else:
+		return false
+
+func delete_vote(player_id):
+	#Deleta o voto e atualiza a lista par os outros jogadores
+	player_list[player_id]["votes"] -= 1
+	rpc("update_list", player_list)
+	emit_signal("refresh_list")
+
+func reset_votes():
+	for i in player_list:
+		player_list[i]["votes"] = 0
+
+######### Julgamento #########
+var guilty_count = 0
+var innocent_count = 0
+var trial_id = 0
+
+signal trial_ended
+
+#Guarda o id do jogador em julgamento
+func set_trial_id(value):
+	trial_id = value
+
+func get_trial_id():
+	return trial_id
+
+#Reseta a contagem de votos
+func reset_trial():
+	guilty_count = 0
+	innocent_count = 0
+
+#Altera a quantidade de votos de culpado
+func trial_guilty(value):
+	#Se for o servidor, altera o valor
+	if get_tree().get_network_unique_id() == 1:
+		guilty_confirm(value)
+	#Se for cliente, manda pro servidor
+	else:
+		rpc_id(1, "guilty_confirm", value)
+
+remote func guilty_confirm(value):
+	guilty_count += value
+
+#Altera a quantidade de votos de inocente
+func trial_innocent(value):
+	#Se for o servidor, altera o valor
+	if get_tree().get_network_unique_id() == 1:
+		innocent_confirm(value)
+	#Se for cliente, manda pro servidor
+	else:
+		rpc_id(1, "innocent_confirm", value)
+
+remote func innocent_confirm(value):
+	innocent_count += value
+
+#Atualiza todos do resultado do julgamento
+func get_sentence():
+	#Só permite acesso dessa função para o servidor
+	if get_tree().get_network_unique_id() != 1:
+		return
+	
+	var sentence = calculate_sentence()
+	#Caso o jogador tenha sido eliminado, atualiza todos os outros
+	if sentence == (-1):
+		player_list[trial_id]["alive"] = false
+		rpc("update_list", player_list)
+	
+	#Confirma que o julgamento acabou
+	rpc("confirm_trial", sentence)
+	confirm_trial(sentence)
+
+remote func confirm_trial(sentence):
+	emit_signal("trial_ended", sentence)
+
+#Calcula o resultado do julgamento
+# (-1) = Culpado; 1 = Inocente; 0 = Empate
+func calculate_sentence():
+	if guilty_count > innocent_count:
+		return (-1)
+	elif innocent_count > guilty_count:
+		return 1
+	else:
+		return 0
+
+######### Controle da Partida #########
 func _ready():
 	#Conectando todas as chamadas de internet
+	# warning-ignore:return_value_discarded
 	get_tree().connect("network_peer_connected",self,"_player_connected")
+	# warning-ignore:return_value_discarded
 	get_tree().connect("network_peer_disconnected",self,"_player_disconnected")
+	# warning-ignore:return_value_discarded
 	get_tree().connect("server_disconnected",self,"_server_disconnected")
+	# warning-ignore:return_value_discarded
 	get_tree().connect("connected_to_server",self,"_connected_ok")
+	# warning-ignore:return_value_discarded
 	get_tree().connect("connection_failed",self,"_connected_fail")
 	
 	populate_class_maps()
@@ -182,12 +281,16 @@ func _player_connected(id):
 
 #Deleta o jogador que desconectar
 func _player_disconnected(id):
-	player_list.erase(id)
-	emit_signal("changed_lobby")
+	if not game_running:
+		player_list.erase(id)
+		emit_signal("changed_lobby")
 
 #Servidor desconectou
 func _server_disconnected():
-	player_list = {}
+	#Reseta as informções do jogador
+	reset_variables()
+	get_tree().set_network_peer(null)
+	# warning-ignore:return_value_discarded
 	get_tree().change_scene(MAIN_PATH)
 	emit_signal("server_down")
 
@@ -200,7 +303,9 @@ func _connected_ok():
 
 #Não consegui conectar no servidor (cliente)
 func _connected_fail():
-	return
+	# warning-ignore:return_value_discarded
+	get_tree().change_scene(MAIN_PATH)
+	emit_signal("server_down")
 
 #Função pode ser chamada por método rpc para registrar jogadores
 remote func register_player(info):
@@ -212,73 +317,42 @@ remote func register_player(info):
 	#Se a partida estiver cheia, avisa o servidor para começar
 	if player_list.size() == 16:
 		emit_signal("full_lobby")
-	
-
-func get_classes_for_current_match():
-	var choice_mask_index = 0
-	
-	if player_list.size() <= 5:
-		choice_mask_index = 0
-	if player_list.size() > 5:
-		choice_mask_index = player_list.size() - 5
-	
-	var class_list = []
-	
-	var choice_mask = choice_masks[choice_mask_index]
-	#print(choice_mask)
-	
-	var choice_set_index = 0
-	for character in choice_mask:
-		var int_value = character.to_int()
-		var choice_set = choice_sets[choice_set_index]
-		
-		# Choose (int_value) classes from (choice_set) randomly.
-		
-		#print(int_value)
-		#print(choice_set)
-		
-		var random_number = 0
-		for choice in range(int_value):
-			random_number = PRNG.randi_range(0, len(choice_set)-1)
-			var chosen_class = choice_set[random_number]
-			class_list.append(chosen_class)
-			#print(chosen_class)
-			
-		choice_set_index = choice_set_index + 1 # update choice set index for next iteration
-	
-	class_list.shuffle()
-	
-	return class_list
-
-func class_distribution():
-	var class_list = get_classes_for_current_match()
-	
-	var class_list_index = 0
-	for i in player_list:
-		player_list[i]["class"] = class_list[class_list_index]
-		class_list_index = class_list_index + 1
-
-func start_game():
-	class_distribution() # atualiza lista de jogadores com as classes que lhes forem atribuídas	
-	#print(player_list)
-	rpc("change_all_screens")
-	get_tree().change_scene(CLASS_SELECTION_PATH) # para trocar a tela do servidor
-	
-remote func change_all_screens():
-	get_tree().change_scene(CLASS_SELECTION_PATH) # para trocar a tela dos outros
 
 #Função para se desconectar da partida
 func disconnect_player():
-	player_list = {}
-	clear_servers()
+	#Se estiver em uma partida rodando, elimina o jogador
+	if game_running:
+		set_player_dead(get_tree().get_network_unique_id())
+	
+	#Espera ele atualizar o servidor e o deleta
+	OS.delay_msec(200)
+	reset_variables()
 	get_tree().set_network_peer(null)
 	if creating_match:
 		socketUDP.close()
 		creating_match = false
+		# warning-ignore:return_value_discarded
 		get_tree().change_scene(MAIN_PATH)
 	else:
+		# warning-ignore:return_value_discarded
 		get_tree().change_scene(SERVER_PATH)
 
+#Atualiza a lista de jogadores do servidor com o uqe mandou a chamada eliminado
+remote func player_eliminated(id):
+	player_list[id]["alive"] = false
+
+	#Passa a lista de jogadores atualizada para todos os clientes
+	rpc("update_list", player_list)
+	emit_signal("refresh_list")
+
+#Getter e setter para a fase atual
+func get_current_phase():
+	return current_phase
+
+func set_current_phase(value):
+	current_phase = value
+
+######### Funções Auxiliares #########
 #Getter para a lista de servidores
 func get_servers():
 	return server_list
@@ -296,10 +370,22 @@ func set_name(p_name):
 func get_players():
 	return player_list
 
+#Getter parra as minhas informações
+func get_my_info():
+	return get_player_info(get_tree().get_network_unique_id())
+
+func get_my_id():
+	return get_tree().get_network_unique_id()
+
+#Getter para as informações de um jogador
+func get_player_info(id):
+	return player_list[id]
+
 #Getter para se está criando partida
 func get_creating():
 	return creating_match
 
+#Getters para as variaveis relacionadas com a distribuição de classes
 func get_classes():
 	return classes
 
@@ -308,3 +394,130 @@ func get_choice_masks():
 	
 func get_choice_sets():
 	return choice_sets
+
+#Getter e setter para se está mostrando jogadores vivos ou eliminados
+func set_showing_alive(value):
+	showing_alive = value
+	emit_signal("refresh_list")
+
+func get_showing_alive():
+	return showing_alive
+
+#Atualiza para o jogador atual ser eliminado
+func set_player_dead(player_id):
+	#Se for o servidor, atualiza o resto dos jogadores
+	if player_id == 1:
+		player_list[1]["alive"] = false
+		rpc("update_list", player_list)
+	#Se for um jogador, avisa o servidor
+	else:
+		rpc_id(1, "player_eliminated", player_id)
+
+#Avança para o próximo dia e getter para o dia atual
+func next_day():
+	current_day += 1
+
+func get_current_day():
+	return current_day
+
+#Getter e setter para se o jogador pausou
+func get_paused():
+	return paused
+
+func set_paused(value):
+	paused = value
+
+#Limpa todas as variaveis
+func reset_variables():
+	player_list = {}
+	my_info["class"] = ""
+	my_info["alive"] = true
+	my_info["votes"] = 0
+	searching_match = false
+	showing_alive = true
+	game_running = false
+	current_day = 0
+	paused = false
+	clear_servers()
+
+#Função para atualizar as classes dos clientes
+remote func update_list(new_info):
+	for i in player_list:
+		for j in new_info:
+			if i == j:
+				player_list[i] = new_info[j]
+	
+	emit_signal("refresh_list")
+
+#Getter para quantidade de pessoas vivas
+func get_alive_players():
+	var quant = 0
+	for i in player_list:
+		if player_list[i]["alive"]:
+			quant += 1
+	
+	return float(quant)
+
+######### Criar todas as classes do jogo e suas distribuições #########
+func populate_class_maps():
+	# Classes da Cidade
+	classes["leader"] = {"alignment": "Cidade", "name": "Líder", "skill": ""}
+	classes["detective"] = {"alignment": "Cidade", "name": "Detetive", "skill": ""}
+	classes["observer"] = {"alignment": "Cidade", "name": "Observador", "skill": ""}
+	classes["messenger"] = {"alignment": "Cidade", "name": "Mensageiro", "skill": ""}
+	classes["hunter"] = {"alignment": "Cidade", "name": "Caçador", "skill": ""}
+	classes["captain"] = {"alignment": "Cidade", "name": "Capitão", "skill": ""}
+	classes["alchemist"] = {"alignment": "Cidade", "name": "Alquimista", "skill": ""}
+	classes["guard"] = {"alignment": "Cidade", "name": "Guarda", "skill": ""}
+	
+	# Classes dos Lobisomens
+	classes["werewolf"] = {"alignment": "Lobisomens", "name": "Lobisomem", "skill": ""}
+	classes["sorcerer"] = {"alignment": "Lobisomens", "name": "Feiticeiro", "skill": ""}
+	classes["elder"] = {"alignment": "Lobisomens", "name": "Ancião", "skill": ""}
+	classes["mimic"] = {"alignment": "Lobisomens", "name": "Mímico", "skill": ""}
+	classes["cultist"] = {"alignment": "Lobisomens", "name": "Cultista", "skill": ""}
+	
+	# Classes Neutras
+	classes["fugitive"] = {"alignment": "Neutro", "name": "Fugitivo", "skill": ""}
+	classes["outsider"] = {"alignment": "Neutro", "name": "Forasteiro", "skill": ""}
+	classes["avenger"] = {"alignment": "Neutro", "name": "Vingador", "skill": ""}
+	classes["stalker"] = {"alignment": "Neutro", "name": "Suicida", "skill": ""}
+	classes["suicidal"] = {"alignment": "Neutro", "name": "Stalker", "skill": ""}
+	
+	choice_sets.append(["leader", "detective", "observer", "messenger"])
+	choice_sets.append(["leader", "detective", "hunter"])
+	choice_sets.append(["detective", "observer", "messenger"])
+	choice_sets.append(["captain", "hunter"])
+	choice_sets.append(["alchemist", "guard"])
+	choice_sets.append(["leader", "detective", "observer", "messenger", "hunter", "captain", "alchemist", "guard"])
+	choice_sets.append(["werewolf"])
+	choice_sets.append(["sorcerer", "elder", "mimic"])
+	choice_sets.append(["cultist"])
+	choice_sets.append(["fugitive", "outsider", "avenger", "stalker", "suicidal"])
+	
+	var choices_for_5_players  = "1001101100"
+	var choices_for_6_players  = "0111101100"
+	var choices_for_7_players  = "0111101101"
+	var choices_for_8_players  = "0111111101"
+	var choices_for_9_players  = "0111111111"
+	var choices_for_10_players = "0121111111"
+	var choices_for_11_players = "0121121111"
+	var choices_for_12_players = "0121121211"
+	var choices_for_13_players = "0121221211"
+	var choices_for_14_players = "0121221212"
+	var choices_for_15_players = "0121221222"
+	var choices_for_16_players = "0121231222"
+	
+	choice_masks.append(choices_for_5_players) #0 + 5 = 5
+	choice_masks.append(choices_for_6_players) #1
+	choice_masks.append(choices_for_7_players) #2
+	choice_masks.append(choices_for_8_players) #3
+	choice_masks.append(choices_for_9_players) #4
+	choice_masks.append(choices_for_10_players) #5
+	choice_masks.append(choices_for_11_players) #6
+	choice_masks.append(choices_for_12_players) #7
+	choice_masks.append(choices_for_13_players) #8
+	choice_masks.append(choices_for_14_players) #9
+	choice_masks.append(choices_for_15_players) #10
+	choice_masks.append(choices_for_16_players) #11 + 5 = 16
+	PRNG.randomize()
