@@ -1,8 +1,8 @@
 extends Control
 
 #Tempo do dia em segundos
-const TRIAL_TIMER = 5#20
-const VOTING_TIMER = 5#15
+const TRIAL_TIMER = 20#5
+const VOTING_TIMER = 15#5
 const COOLDOWN = 5
 const NIGHT_PATH = "res://scenes/MatchNight.tscn"
 
@@ -24,13 +24,18 @@ onready var btn_guilty = $Trial/Voting/Others/GuiltyBtn
 onready var btn_innocnet = $Trial/Voting/Others/InnocentBtn
 onready var btn_abstain = $Trial/Voting/Others/AbstainBtn
 
+onready var popup_end = $EndGame
+
 var trial_ended = false
 var on_cooldown = false
+var game_ended = false
+var game_info = ""
 
 ######### Controle do Período #########
 func _ready():
 # warning-ignore:return_value_discarded
 	LobbyManager.connect("trial_ended", self, "_on_trial_ended")
+	LobbyManager.connect("end_game", self, "_on_end_game")
 	top.connect("phase_ended", self, "_on_phase_ended")
 	top.connect("game_paused", self, "_on_game_paused")
 	LobbyManager.set_current_phase(LobbyManager.TRIAL)
@@ -92,10 +97,22 @@ func _on_phase_ended():
 		LobbyManager.get_sentence()
 		top.start_timer(COOLDOWN)
 		on_cooldown = true
+		LobbyManager.check_winner()
 	#O tempo para resolução acabou
 	else:
-		# warning-ignore:return_value_discarded
-		get_tree().change_scene(NIGHT_PATH)
+		if game_ended:
+			top.stop_timer()
+			LobbyManager.set_game_running(false)
+			popup_end.change_info(game_info)
+			popup_end.set_visible(true)
+		else:
+			# warning-ignore:return_value_discarded
+			get_tree().change_scene(NIGHT_PATH)
+
+#Mostra o fim do jogo
+func _on_end_game(value):
+	game_ended = true
+	game_info = value
 
 ######### Seleção de Voto #########
 var vote = 0 #(-1) = guilty; 0 = abstained; 1 = innocent

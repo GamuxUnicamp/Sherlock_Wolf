@@ -1,7 +1,7 @@
 extends Control
 
 #Tempo da noite em segundos
-const NIGHT_TIMER = 5#30
+const NIGHT_TIMER = 30#5
 const DAY_PATH = "res://scenes/MatchDay.tscn"
 
 onready var top = $Top

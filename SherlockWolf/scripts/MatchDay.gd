@@ -1,7 +1,7 @@
 extends Control
 
 #Tempo do dia em segundos
-const DAY_TIMER = 5#80
+const DAY_TIMER = 80#5
 const WAIT_TIME = 3000 #ms
 const VOTING_PATH = "res://scenes/MatchVoting.tscn"
 
@@ -11,11 +11,13 @@ onready var popup_quit = $PopupQuit
 onready var popup_night = $PopupNight
 onready var popup_info = $PopupNight/Info
 onready var popup_timer = $PopupNight/Timer
+onready var popup_end = $EndGame
 
 ######### Controle do Período #########
 func _ready():
 	# warning-ignore:return_value_discarded
 	LobbyManager.connect("refresh_list", self, "_on_refresh_list")
+	LobbyManager.connect("end_game", self, "_on_end_game")
 	top.connect("phase_ended", self, "_on_phase_ended")
 	top.connect("game_paused", self, "_on_game_paused")
 	LobbyManager.set_current_phase(LobbyManager.DAY)
@@ -36,7 +38,6 @@ func _ready():
 	
 	#Mostra quem morreu durante a noite e informações obtidas
 	popup_night.set_visible(true)
-	#Mudar o texto da tela
 	popup_info.set_text(LobbyManager.get_skill_info() + LobbyManager.get_night_info())
 	popup_timer.start()
 
@@ -44,17 +45,28 @@ func _ready():
 func _on_refresh_list():
 	node_list.load_players()
 
-#Troca pra dia
-func _on_phase_ended():
-	# warning-ignore:return_value_discarded
-	get_tree().change_scene(VOTING_PATH)
-
 #Some com a tela de acontecimentos da noite
 func _on_Timer_timeout():
 	popup_night.set_visible(false)
 	
 	#Começa o timer para trocar de tela
 	top.start_timer(DAY_TIMER)
+	
+	#Calcula se houve algum vencedor
+	LobbyManager.check_winner()
+
+#Troca pra votação
+func _on_phase_ended():
+	# warning-ignore:return_value_discarded
+	get_tree().change_scene(VOTING_PATH)
+
+#Mostra o fim do jogo
+func _on_end_game(value):
+	top.stop_timer()
+	LobbyManager.set_game_running(false)
+	popup_end.change_info(value)
+	popup_night.set_visible(false)
+	popup_end.set_visible(true)
 
 ######### Seleção de Mensagem #########
 func select_player(player_id):

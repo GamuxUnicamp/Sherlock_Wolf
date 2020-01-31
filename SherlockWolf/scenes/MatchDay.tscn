@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=2]
+[gd_scene load_steps=11 format=2]
 
 [ext_resource path="res://scripts/MatchDay.gd" type="Script" id=1]
 [ext_resource path="res://scripts/DayList.gd" type="Script" id=2]
@@ -7,6 +7,7 @@
 [ext_resource path="res://resources/instances/PopupQuit.tscn" type="PackedScene" id=5]
 [ext_resource path="res://resources/Antonio-Bold.ttf" type="DynamicFontData" id=6]
 [ext_resource path="res://resources/Antonio-Regular.ttf" type="DynamicFontData" id=7]
+[ext_resource path="res://resources/instances/EndGame.tscn" type="PackedScene" id=8]
 
 [sub_resource type="DynamicFont" id=1]
 size = 32
@@ -47,6 +48,7 @@ alignment = 1
 visible = false
 
 [node name="PopupNight" type="Control" parent="."]
+editor/display_folded = true
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -98,4 +100,7 @@ text = "Não aconteceu nada."
 [node name="Timer" type="Timer" parent="PopupNight"]
 wait_time = 3.0
 one_shot = true
+
+[node name="EndGame" parent="." instance=ExtResource( 8 )]
+visible = false
 [connection signal="timeout" from="PopupNight/Timer" to="." method="_on_Timer_timeout"]

@@ -45,6 +45,10 @@ func _on_Timer_timeout():
 func get_time():
 	return current_time
 
+#Pausar o timer
+func stop_timer():
+	timer.stop()
+
 ######### Dia #########
 onready var day_label = $TimeDay/Day/Label
 

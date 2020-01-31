@@ -15,6 +15,7 @@ signal match_found
 signal full_lobby
 signal refresh_list
 signal night_ended
+signal end_game
 
 #Lista de informações de outros jogadores e minhas informações
 var player_list = {}
@@ -351,6 +352,36 @@ func get_skill_info():
 func reset_skill_info():
 	skill_info = ""
 
+######### Fim da Partida #########
+#Checa se alguem venceu a partida
+func check_winner():
+	#Apenas o servidor usa essa função
+	if not get_tree().get_network_unique_id() == 1:
+		return
+	
+	var town_alive = 0
+	var evil_alive = 0
+	
+	for i in player_list:
+		var player_class = player_list[i]["class"]
+		if classes[player_class]["alignment"] == "Cidade" and player_list[i]["alive"]:
+			town_alive += 1
+		elif classes[player_class]["alignment"] == "Lobisomens" and player_list[i]["alive"]:
+			evil_alive += 1
+	
+	if town_alive == 0 and evil_alive > 0:
+		rpc("evil_win")
+		evil_win()
+	elif town_alive > 0 and evil_alive == 0:
+		rpc("town_win")
+		town_win()
+
+remote func evil_win():
+	emit_signal("end_game", "Lobisomens")
+
+remote func town_win():
+	emit_signal("end_game", "Cidade")
+
 ######### Controle da Partida #########
 func _ready():
 	#Conectando todas as chamadas de internet
@@ -378,19 +409,10 @@ func _player_disconnected(id):
 	if not game_running:
 		player_list.erase(id)
 		emit_signal("changed_lobby")
-	#Se estiver na partida e o servidor sair
-	else:
-		if id == 1:
-			disconnect_player()
 
-#Servidor desconectou
+#Servidor desconectou (Executado no Cliente)
 func _server_disconnected():
-	#Reseta as informções do jogador
-	reset_variables()
-	get_tree().set_network_peer(null)
-	# warning-ignore:return_value_discarded
-	get_tree().change_scene(MAIN_PATH)
-	emit_signal("server_down")
+	print("servidor desconectou")
 
 #Conectado com sucesso (cliente)
 func _connected_ok():
@@ -418,6 +440,10 @@ remote func register_player(info):
 
 #Função para se desconectar da partida
 func disconnect_player():
+	#Se for o servidor, avisa todos q a partida acabou/caiu
+	if get_tree().get_network_unique_id() == 1 and game_running:
+		rpc("server_off")
+	
 	#Se estiver em uma partida rodando, elimina o jogador
 	if game_running:
 		set_player_dead(get_tree().get_network_unique_id())
@@ -442,6 +468,15 @@ remote func player_eliminated(id):
 	#Passa a lista de jogadores atualizada para todos os clientes
 	rpc("update_list", player_list)
 	emit_signal("refresh_list")
+
+remote func server_off():
+	#Reseta as informções do jogador
+	reset_variables()
+	get_tree().set_network_peer(null)
+	# warning-ignore:return_value_discarded
+	get_tree().change_scene(MAIN_PATH)
+	OS.delay_msec(200)
+	emit_signal("server_down")
 
 #Getter e setter para a fase atual
 func get_current_phase():
@@ -569,6 +604,10 @@ func get_dead_count():
 func set_dead_count(value):
 	dead_count = value
 
+#Setter para o estado do jogo
+func set_game_running(value):
+	game_running = value
+
 ######### Criar todas as classes do jogo e suas distribuições #########
 func populate_class_maps():
 	# Classes da Cidade
@@ -606,7 +645,7 @@ func populate_class_maps():
 	choice_sets.append(["cultist"])
 	choice_sets.append(["fugitive", "outsider", "avenger", "stalker", "suicidal"])
 	
-	var choices_for_5_players  = "0000011000"#"1001101100"
+	var choices_for_5_players  = "1001101100"#"0000011000"
 	var choices_for_6_players  = "0111101100"
 	var choices_for_7_players  = "0111101101"
 	var choices_for_8_players  = "0111111101"
