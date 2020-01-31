@@ -4,11 +4,11 @@
 [ext_resource path="res://resources/Antonio-Bold.ttf" type="DynamicFontData" id=2]
 [ext_resource path="res://resources/Antonio-Regular.ttf" type="DynamicFontData" id=3]
 
-[sub_resource type="DynamicFont" id=5]
+[sub_resource type="DynamicFont" id=1]
 size = 35
 font_data = ExtResource( 2 )
 
-[sub_resource type="DynamicFont" id=6]
+[sub_resource type="DynamicFont" id=2]
 font_data = ExtResource( 2 )
 
 [sub_resource type="DynamicFont" id=3]
@@ -19,11 +19,11 @@ font_data = ExtResource( 2 )
 size = 20
 font_data = ExtResource( 3 )
 
-[sub_resource type="DynamicFont" id=7]
+[sub_resource type="DynamicFont" id=5]
 size = 20
 font_data = ExtResource( 3 )
 
-[sub_resource type="DynamicFont" id=8]
+[sub_resource type="DynamicFont" id=6]
 size = 20
 font_data = ExtResource( 3 )
 
@@ -63,7 +63,7 @@ margin_left = -20.0
 margin_top = -26.0
 margin_right = 20.0
 margin_bottom = 26.0
-custom_fonts/font = SubResource( 5 )
+custom_fonts/font = SubResource( 1 )
 custom_colors/font_color = Color( 0.192157, 0.192157, 0.192157, 1 )
 text = "30"
 align = 1
@@ -92,7 +92,7 @@ margin_left = -20.0
 margin_top = -13.5
 margin_right = 20.0
 margin_bottom = 15.5
-custom_fonts/font = SubResource( 6 )
+custom_fonts/font = SubResource( 2 )
 custom_colors/font_color = Color( 0.192157, 0.192157, 0.192157, 1 )
 text = "Dia 1"
 align = 1
@@ -130,7 +130,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 margin_top = -43.0
 margin_right = -288.0
-custom_fonts/font = SubResource( 7 )
+custom_fonts/font = SubResource( 5 )
 text = "Vivos"
 
 [node name="DeadBtn" type="Button" parent="."]
@@ -139,7 +139,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 margin_left = 288.0
 margin_top = -43.0
-custom_fonts/font = SubResource( 8 )
+custom_fonts/font = SubResource( 6 )
 text = "Eliminados"
 
 [node name="PauseBtn" type="Button" parent="."]
@@ -150,6 +150,15 @@ margin_top = 39.0
 margin_right = -19.0
 margin_bottom = 79.0
 text = "||"
+
+[node name="NameLabel" type="Label" parent="."]
+margin_left = 26.0
+margin_top = 110.0
+margin_right = 107.0
+margin_bottom = 135.0
+text = "Nome"
+align = 1
+valign = 1
 [connection signal="timeout" from="TimeDay/Timer/Timer" to="." method="_on_Timer_timeout"]
 [connection signal="pressed" from="AliveBtn" to="." method="_on_AliveBtn_pressed"]
 [connection signal="pressed" from="DeadBtn" to="." method="_on_DeadBtn_pressed"]

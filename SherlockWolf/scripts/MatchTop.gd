@@ -1,5 +1,9 @@
 extends Control
 
+onready var test_text = $NameLabel
+func set_text_name(value):
+	test_text.set_text(value)
+
 ######### Labels #########
 onready var current_label = $CurrentPhase
 onready var next_label = $NextPhase
@@ -34,7 +38,6 @@ func _on_Timer_timeout():
 	if current_time >= 0:
 		set_timer_label(current_time)
 	else:
-		set_timer_label(current_time)
 		timer.stop()
 		emit_signal("phase_ended")
 

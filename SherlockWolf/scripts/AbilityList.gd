@@ -14,9 +14,11 @@ func load_players():
 	
 	for i in player_list:
 		player_ok = true
+		#Mostra jogadores vivos se selecionou mostrar os vivos
 		if showing_alive and not player_list[i]["alive"]:
 			player_ok = false
 		
+		#Mostra jogadores mortos se selecionou mostrar os mortos
 		if not showing_alive and player_list[i]["alive"]:
 			player_ok = false
 		
@@ -26,12 +28,16 @@ func load_players():
 			node.get_node("Name").set_text(player_list[i]["name"])
 			node.rect_min_size = Vector2(node_list.get_parent().get_size().x, node.get_size().y)
 			
+			#Se estiver na votação mostra o número de votos
 			if LobbyManager.get_current_phase() == LobbyManager.VOTING:
 				node.get_node("Vote").set_text(str(player_list[i]["votes"]))
 			
-			if player_id == i:
+			#Passa o filtro específico da classe para poder ser selecionado
+			if not AbilitiesManager.display_names(i, player_list[i], player_id, player_list[player_id]):
 				node.get_node("Button").set_disabled(true)
-			if not player_list[i]["alive"]:
+			
+			#Se estiver morto, tira o botão completamente
+			if (not player_list[i]["alive"]) or (not player_list[player_id]["alive"]):
 				node.get_node("Button").set_visible(false)
 			node_list.add_child(node)
 

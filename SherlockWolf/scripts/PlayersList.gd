@@ -26,12 +26,12 @@ func load_players():
 			node.get_node("Name").set_text(player_list[i]["name"])
 			node.rect_min_size = Vector2(node_list.get_parent().get_size().x, node.get_size().y)
 			
-			if LobbyManager.get_current_phase() == LobbyManager.VOTING:
+			if LobbyManager.get_current_phase() == LobbyManager.VOTING and player_list[i]["alive"]:
 				node.get_node("Vote").set_text(str(player_list[i]["votes"]))
 			
 			if player_id == i:
 				node.get_node("Button").set_disabled(true)
-			if not player_list[i]["alive"]:
+			if (not player_list[i]["alive"]) or (not player_list[player_id]["alive"]):
 				node.get_node("Button").set_visible(false)
 			node_list.add_child(node)
 

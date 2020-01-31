@@ -28,6 +28,7 @@ func _ready():
 	top.set_day()
 	top.set_curent_phase("Descubra sua classe")
 	top.set_next_phase("Noite")
+	top.set_text_name(LobbyManager.get_my_info()["name"])
 	
 	#Começa o timer para trocar de tela
 	top.start_timer(PREPARE_TIMER)

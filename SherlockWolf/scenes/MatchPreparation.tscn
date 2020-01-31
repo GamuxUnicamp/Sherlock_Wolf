@@ -79,7 +79,6 @@ align = 3
 autowrap = true
 
 [node name="Top" type="Control" parent="."]
-editor/display_folded = true
 anchor_right = 1.0
 margin_bottom = 190.0
 script = ExtResource( 3 )
@@ -184,6 +183,15 @@ margin_top = 19.0
 margin_right = -17.0
 margin_bottom = 59.0
 text = "||"
+
+[node name="NameLabel" type="Label" parent="Top"]
+margin_left = 27.0
+margin_top = 109.0
+margin_right = 106.0
+margin_bottom = 123.0
+text = "Nome"
+align = 1
+valign = 1
 
 [node name="PopupQuit" parent="." instance=ExtResource( 5 )]
 visible = false

@@ -14,14 +14,19 @@ signal server_down
 signal match_found
 signal full_lobby
 signal refresh_list
+signal night_ended
 
 #Lista de informações de outros jogadores e minhas informações
 var player_list = {}
 var my_info = {"name": "", "class": "", "alive" : true, "votes": 0, "message": ""}
+var night_info = ""
+var skill_info = ""
 var creating_match = false
 var searching_match = false
 var showing_alive = true
 var game_running = false
+var is_night = false
+var dead_count = 0
 
 #Informações de servidores
 var socketUDP = PacketPeerUDP.new()
@@ -29,6 +34,7 @@ var server_list = {}
 var quant_servers = 0
 var current_day = 0
 var paused = false
+var skills_queue = {"1": {}, "2": {}, "3": {}, "4": {}, "5": {}}
 
 enum {NIGHT, DAY, VOTING, TRIAL}
 var current_phase
@@ -38,9 +44,6 @@ var classes = {}
 var choice_sets = []
 var choice_masks = []
 var PRNG = RandomNumberGenerator.new()
-
-func get_votes():
-	return player_list[get_tree().get_network_unique_id()]["votes"]
 
 ######### Servidor #########
 func create_host():
@@ -186,6 +189,9 @@ func reset_votes():
 	for i in player_list:
 		player_list[i]["votes"] = 0
 
+func get_votes():
+	return player_list[get_tree().get_network_unique_id()]["votes"]
+
 ######### Julgamento #########
 var guilty_count = 0
 var innocent_count = 0
@@ -258,6 +264,93 @@ func calculate_sentence():
 	else:
 		return 0
 
+######### Processamento de Habilidades #########
+#Limpa a fila de skills
+func clear_skill_queue():
+	skills_queue = {"1": {}, "2": {}, "3": {}, "4": {}, "5": {}}
+
+#Manda o servidor adicionar a skill na lista
+func request_skill_queue(priority, player_id, info):
+	
+	#Não manda se não for de noite
+	if not is_night:
+		return
+	
+	#Cliente manda pro servidor, servidor executa
+	if get_tree().get_network_unique_id() == 1:
+		add_skill_queue(priority, player_id, info)
+	else:
+		rpc_id(1, "add_skill_queue", priority, player_id, info)
+
+#Adiciona o uso da skill
+remote func add_skill_queue(priority, player_id, info):
+	skills_queue[priority][player_id] = info
+
+#Resolve as skills
+func solve_skills():
+	#Muda para não aceitar mais pedidos de skills
+	is_night = false
+	
+	#Apenas o servidor é permitido executar essa função
+	if not get_tree().get_network_unique_id() == 1:
+		return
+	
+	#Começa pelas de maior prioridade
+	for i in range(5, 0, -1):
+		for j in skills_queue[str(i)].keys():
+			#Processando a skill
+			var target_id = skills_queue[str(i)][j]["target_id"]
+			var target_info = skills_queue[str(i)][j]["target_info"]
+			var player_info = skills_queue[str(i)][j]["player_info"]
+			AbilitiesManager.confirm_ability(target_id, target_info, j, player_info)
+	
+	#Salva oq aconteceu para as pessoas
+	set_night_info("Alguem morreu bla bla")
+	
+	#Manda todo mundo pra próxima tela
+	rpc("night_ended", dead_count)
+	night_ended(dead_count)
+
+#Atualiza a contagem de mortos e muda a tela
+remote func night_ended(value):
+	dead_count = value
+	emit_signal("night_ended")
+
+#Chama a função para atualizar a informação do jogador correto
+func set_night_info(value):
+	for i in player_list:
+		if i == 1:
+			confirm_night_info(value)
+		else:
+			rpc_id(i, "confirm_night_info", value)
+
+#Grava os acontecimentos da noite
+remote func confirm_night_info(value):
+	night_info = value
+
+#Getter para os acontecimentos da noite
+func get_night_info():
+	return night_info
+
+#Chama a função para atualizar a informação do jogador correto
+func set_skill_info(player_id, value):
+	if player_id == 1:
+		confirm_skill_info(value)
+	else:
+		rpc_id(player_id, "confirm_skill_info", value)
+
+#Setter para o resultado da skill
+remote func confirm_skill_info(value):
+	skill_info = value + "\n"
+
+#Getter para os acontecimentos da skill durante a noite
+func get_skill_info():
+	return skill_info
+
+#Reseta o texto
+func reset_skill_info():
+	skill_info = ""
+
 ######### Controle da Partida #########
 func _ready():
 	#Conectando todas as chamadas de internet
@@ -281,9 +374,14 @@ func _player_connected(id):
 
 #Deleta o jogador que desconectar
 func _player_disconnected(id):
+	#Se não estiver na partida
 	if not game_running:
 		player_list.erase(id)
 		emit_signal("changed_lobby")
+	#Se estiver na partida e o servidor sair
+	else:
+		if id == 1:
+			disconnect_player()
 
 #Servidor desconectou
 func _server_disconnected():
@@ -337,7 +435,7 @@ func disconnect_player():
 		# warning-ignore:return_value_discarded
 		get_tree().change_scene(SERVER_PATH)
 
-#Atualiza a lista de jogadores do servidor com o uqe mandou a chamada eliminado
+#Atualiza a lista de jogadores do servidor com o que mandou a chamada eliminando
 remote func player_eliminated(id):
 	player_list[id]["alive"] = false
 
@@ -405,9 +503,11 @@ func get_showing_alive():
 
 #Atualiza para o jogador atual ser eliminado
 func set_player_dead(player_id):
+	dead_count += 1
+	
 	#Se for o servidor, atualiza o resto dos jogadores
-	if player_id == 1:
-		player_list[1]["alive"] = false
+	if get_tree().get_network_unique_id() == 1:
+		player_list[player_id]["alive"] = false
 		rpc("update_list", player_list)
 	#Se for um jogador, avisa o servidor
 	else:
@@ -458,6 +558,17 @@ func get_alive_players():
 	
 	return float(quant)
 
+#Setter para se está de noite
+func set_night(value):
+	is_night = value
+
+#Getter e Setter para o número de mortos em uma noite
+func get_dead_count():
+	return dead_count
+
+func set_dead_count(value):
+	dead_count = value
+
 ######### Criar todas as classes do jogo e suas distribuições #########
 func populate_class_maps():
 	# Classes da Cidade
@@ -495,7 +606,7 @@ func populate_class_maps():
 	choice_sets.append(["cultist"])
 	choice_sets.append(["fugitive", "outsider", "avenger", "stalker", "suicidal"])
 	
-	var choices_for_5_players  = "1001101100"
+	var choices_for_5_players  = "0000011000"#"1001101100"
 	var choices_for_6_players  = "0111101100"
 	var choices_for_7_players  = "0111101101"
 	var choices_for_8_players  = "0111111101"
@@ -521,3 +632,6 @@ func populate_class_maps():
 	choice_masks.append(choices_for_15_players) #10
 	choice_masks.append(choices_for_16_players) #11 + 5 = 16
 	PRNG.randomize()
+
+func get_class_alignment(player_class):
+	return classes[player_class]["alignment"]

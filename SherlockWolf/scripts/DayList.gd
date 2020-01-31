@@ -31,7 +31,7 @@ func load_players():
 			
 			if player_id == i:
 				node.get_node("Button").set_disabled(true)
-			if not player_list[i]["alive"]:
+			if (not player_list[i]["alive"]) or (not player_list[player_id]["alive"]):
 				node.get_node("Button").set_visible(false)
 			node_list.add_child(node)
 

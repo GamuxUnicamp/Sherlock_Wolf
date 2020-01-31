@@ -34,6 +34,7 @@ func _ready():
 	top.connect("phase_ended", self, "_on_phase_ended")
 	top.connect("game_paused", self, "_on_game_paused")
 	LobbyManager.set_current_phase(LobbyManager.TRIAL)
+	top.set_text_name(LobbyManager.get_my_info()["name"])
 	
 	#Checando se o jogador tinha pausado
 	if LobbyManager.get_paused():

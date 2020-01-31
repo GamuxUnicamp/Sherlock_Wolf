@@ -22,6 +22,7 @@ config/icon="res://icon.png"
 [autoload]
 
 LobbyManager="*res://scenes/LobbyManager.tscn"
+AbilitiesManager="*res://scenes/AbilitiesManager.tscn"
 
 [display]
 
