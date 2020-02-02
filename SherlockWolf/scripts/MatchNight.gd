@@ -23,6 +23,7 @@ func _ready():
 	LobbyManager.reset_night_info()
 	LobbyManager.reset_skill_info()
 	LobbyManager.clear_heal()
+	LobbyManager.clear_roleblock()
 	
 	#Checando se o jogador tinha pausado
 	if LobbyManager.get_paused():

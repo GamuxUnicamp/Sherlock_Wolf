@@ -761,7 +761,7 @@ func populate_class_maps():
 	choice_sets.append(["werewolf"])
 	choice_sets.append(["cultist"])
 	
-	var choices_for_5_players  = "21011"
+	var choices_for_5_players  = "21011"#"00110"
 	var choices_for_6_players  = "21111"
 	var choices_for_7_players  = "21112"
 	var choices_for_8_players  = "31112"
