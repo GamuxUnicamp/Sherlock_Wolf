@@ -263,11 +263,11 @@ func messenger_confirm():
 func hunter_confirm(target_id, target_info, player_id, player_info):
 	var target_class = target_info["class"]
 	var target_alingment = LobbyManager.get_class_alignment(target_class)
-	var actions = player_info["actions"]
+	var actions = player_info["actions"] - 1
 	var text = ""
 	
 	#Tira uma ação do jogador
-	LobbyManager.set_actions(player_id, actions - 1)
+	LobbyManager.set_actions(player_id, actions)
 	
 	#Caso o alvo tenha um guarda
 	if LobbyManager.get_guarded(target_id):

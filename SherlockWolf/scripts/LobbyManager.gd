@@ -433,12 +433,18 @@ func check_winner():
 	elif town_alive > 0 and evil_alive == 0:
 		rpc("town_win")
 		town_win()
+	elif town_alive == 0 and evil_alive == 0:
+		rpc("end_draw")
+		end_draw()
 
 remote func evil_win():
 	emit_signal("end_game", "Lobisomens")
 
 remote func town_win():
 	emit_signal("end_game", "Cidade")
+
+remote func end_draw():
+	emit_signal("end_game", "Empate")
 
 ######### Controle da Partida #########
 func _ready():
@@ -727,7 +733,7 @@ func populate_class_maps():
 	classes["detective"] = {"alignment": "Cidade", "name": "Detetive", "skill": "Selecione alguém para ver seu alinhamento!"}
 	classes["observer"] = {"alignment": "Cidade", "name": "Aldeão", "skill": "Ajude a Cidade a eliminar todos os lobisomens!"}
 	classes["messenger"] = {"alignment": "Cidade", "name": "Mensageiro", "skill": ""}
-	classes["hunter"] = {"alignment": "Cidade", "name": "Caçador", "skill": "Escolha algúem para eliminar. Mas cuidado, você só possui três balas!"}
+	classes["hunter"] = {"alignment": "Cidade", "name": "Caçador", "skill": "Escolha algúem para eliminar. Mas cuidado, você só possui três balas e não pode eliminar na primeira noite!"}
 	classes["captain"] = {"alignment": "Cidade", "name": "Capitão", "skill": "Você pode impedir alguém de utilizar a habilidade durante a noite."}
 	classes["alchemist"] = {"alignment": "Cidade", "name": "Alquimista", "skill": "Escolha alguém e impeça que ele seja eliminado."}
 	classes["guard"] = {"alignment": "Cidade", "name": "Guarda", "skill": "Escolha um jogador para proteger. Se ele for atacado, você será eliminado em seu lugar mas eliminará quem atacou!"}
