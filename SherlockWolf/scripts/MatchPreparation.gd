@@ -1,7 +1,7 @@
 extends Control
 
 #Tempo de preparação em segundos
-const PREPARE_TIMER = 10#5
+const PREPARE_TIMER = 10
 const NIGHT_PATH = "res://scenes/MatchNight.tscn"
 
 onready var name_label = $Class/ClassName

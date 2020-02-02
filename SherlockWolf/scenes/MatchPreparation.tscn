@@ -11,7 +11,7 @@ size = 35
 font_data = ExtResource( 2 )
 
 [sub_resource type="DynamicFont" id=2]
-size = 20
+size = 28
 font_data = ExtResource( 2 )
 
 [sub_resource type="DynamicFont" id=3]
@@ -40,7 +40,6 @@ anchor_bottom = 1.0
 color = Color( 0.921569, 0.921569, 0.921569, 1 )
 
 [node name="Class" type="Control" parent="."]
-editor/display_folded = true
 anchor_right = 1.0
 anchor_bottom = 1.0
 margin_top = 184.0
@@ -74,7 +73,7 @@ margin_right = 221.0
 margin_bottom = 602.0
 custom_fonts/font = SubResource( 2 )
 custom_colors/font_color = Color( 0.192157, 0.192157, 0.192157, 1 )
-text = "Descrção da classe."
+text = "Descrição da classe."
 align = 3
 autowrap = true
 

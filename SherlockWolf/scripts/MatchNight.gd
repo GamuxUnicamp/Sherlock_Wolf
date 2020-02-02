@@ -1,7 +1,7 @@
 extends Control
 
 #Tempo da noite em segundos
-const NIGHT_TIMER = 30#5
+const NIGHT_TIMER = 30
 const DAY_PATH = "res://scenes/MatchDay.tscn"
 
 onready var top = $Top
@@ -20,7 +20,9 @@ func _ready():
 	LobbyManager.clear_skill_queue()
 	LobbyManager.set_night(true)
 	LobbyManager.set_dead_count(0)
+	LobbyManager.reset_night_info()
 	LobbyManager.reset_skill_info()
+	LobbyManager.clear_heal()
 	
 	#Checando se o jogador tinha pausado
 	if LobbyManager.get_paused():

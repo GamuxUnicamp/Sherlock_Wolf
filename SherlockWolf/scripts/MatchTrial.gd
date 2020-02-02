@@ -1,8 +1,8 @@
 extends Control
 
 #Tempo do dia em segundos
-const TRIAL_TIMER = 20#5
-const VOTING_TIMER = 15#5
+const TRIAL_TIMER = 20
+const VOTING_TIMER = 15
 const COOLDOWN = 5
 const NIGHT_PATH = "res://scenes/MatchNight.tscn"
 

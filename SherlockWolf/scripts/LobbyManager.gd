@@ -19,7 +19,7 @@ signal end_game
 
 #Lista de informações de outros jogadores e minhas informações
 var player_list = {}
-var my_info = {"name": "", "class": "", "alive" : true, "votes": 0, "message": ""}
+var my_info = {"name": "", "class": "", "alive" : true, "votes": 0, "revealed": false, "actions": 3, "healed": false, "guarded": false, "roleblock": false, "guard": 0}
 var night_info = ""
 var skill_info = ""
 var creating_match = false
@@ -306,7 +306,10 @@ func solve_skills():
 			AbilitiesManager.confirm_ability(target_id, target_info, j, player_info)
 	
 	#Salva oq aconteceu para as pessoas
-	set_night_info("Alguem morreu bla bla")
+	if dead_count == 0:
+		set_night_info("Nenhum jogador foi eliminado durante essa noite.")
+	
+	rpc("update_list", player_list)
 	
 	#Manda todo mundo pra próxima tela
 	rpc("night_ended", dead_count)
@@ -327,11 +330,15 @@ func set_night_info(value):
 
 #Grava os acontecimentos da noite
 remote func confirm_night_info(value):
-	night_info = value
+	night_info += value + "\n"
 
 #Getter para os acontecimentos da noite
 func get_night_info():
 	return night_info
+
+#Reseta o texto
+func reset_night_info():
+	night_info = ""
 
 #Chama a função para atualizar a informação do jogador correto
 func set_skill_info(player_id, value):
@@ -342,7 +349,7 @@ func set_skill_info(player_id, value):
 
 #Setter para o resultado da skill
 remote func confirm_skill_info(value):
-	skill_info = value + "\n"
+	skill_info += value + "\n"
 
 #Getter para os acontecimentos da skill durante a noite
 func get_skill_info():
@@ -351,6 +358,57 @@ func get_skill_info():
 #Reseta o texto
 func reset_skill_info():
 	skill_info = ""
+
+#Altera o número de ações disponíveis
+func set_actions(player_id, value):
+	player_list[player_id]["actions"] = value
+
+#Getter e setter para se um jogador foi revelado
+func get_revealed(player_id):
+	return player_list[player_id]["revealed"]
+
+func set_revealed(player_id, value):
+	player_list[player_id]["revealed"] = value
+
+#Getter e setter para guarda
+func get_guarded(player_id):
+	return player_list[player_id]["guarded"]
+
+func get_guard(player_id):
+	return player_list[player_id]["guard"]
+
+func set_guarded(player_id, value, guard_id):
+	player_list[player_id]["guarded"] = value
+	player_list[player_id]["guard"] = guard_id
+
+#Limpar a guarda de todos os jogadores
+func clear_guard():
+	for i in player_list:
+		set_guarded(i, false, 0)
+
+#Getter e setter para se foi curado durante a noite
+func get_healed(player_id):
+	return player_list[player_id]["healed"]
+
+func set_healed(player_id, value):
+	player_list[player_id]["healed"] = value
+
+#Limpar a cura de todos
+func clear_heal():
+	for i in player_list:
+		player_list[i]["healed"] = false
+
+#Getter e setter para roleblock
+func get_roleblocked(player_id):
+	return player_list[player_id]["roleblock"]
+
+func set_roleblocked(player_id, value):
+	player_list[player_id]["roleblock"] = value
+
+#Limpar a cura de todos
+func clear_roleblock():
+	for i in player_list:
+		player_list[i]["roleblock"] = false
 
 ######### Fim da Partida #########
 #Checa se alguem venceu a partida
@@ -462,12 +520,12 @@ func disconnect_player():
 		get_tree().change_scene(SERVER_PATH)
 
 #Atualiza a lista de jogadores do servidor com o que mandou a chamada eliminando
-remote func player_eliminated(id):
-	player_list[id]["alive"] = false
-
-	#Passa a lista de jogadores atualizada para todos os clientes
-	rpc("update_list", player_list)
-	emit_signal("refresh_list")
+#remote func player_eliminated(id):
+#	player_list[id]["alive"] = false
+#
+#	#Passa a lista de jogadores atualizada para todos os clientes
+#	rpc("update_list", player_list)
+#	emit_signal("refresh_list")
 
 remote func server_off():
 	#Reseta as informções do jogador
@@ -503,6 +561,10 @@ func set_name(p_name):
 func get_players():
 	return player_list
 
+#Getter para a quantidade de jogadores no servidor
+func get_players_quant():
+	return player_list.size()
+
 #Getter parra as minhas informações
 func get_my_info():
 	return get_player_info(get_tree().get_network_unique_id())
@@ -513,6 +575,10 @@ func get_my_id():
 #Getter para as informações de um jogador
 func get_player_info(id):
 	return player_list[id]
+
+#Getter para o nome do jogador
+func get_player_name(player_id):
+	return player_list[player_id]["name"]
 
 #Getter para se está criando partida
 func get_creating():
@@ -537,16 +603,19 @@ func get_showing_alive():
 	return showing_alive
 
 #Atualiza para o jogador atual ser eliminado
-func set_player_dead(player_id):
+remote func set_player_dead(player_id):
 	dead_count += 1
 	
 	#Se for o servidor, atualiza o resto dos jogadores
 	if get_tree().get_network_unique_id() == 1:
 		player_list[player_id]["alive"] = false
+		if player_list[player_id]["class"] == "werewolf":
+			transform_new_werewolf()
+		
 		rpc("update_list", player_list)
 	#Se for um jogador, avisa o servidor
 	else:
-		rpc_id(1, "player_eliminated", player_id)
+		rpc_id(1, "set_player_dead", player_id)
 
 #Avança para o próximo dia e getter para o dia atual
 func next_day():
@@ -608,24 +677,67 @@ func set_dead_count(value):
 func set_game_running(value):
 	game_running = value
 
+#Transforma alguem do mal em lobisomem
+func transform_new_werewolf():
+	var player_class
+	var player_alingment
+	var evil_players = {}
+	var cultist_players = {}
+	
+	#Separa todos os cultistas em uma lista e o resto dos do mal em outra
+	for i in player_list:
+		player_class = player_list[i]["class"]
+		player_alingment = LobbyManager.get_class_alignment(player_class)
+		
+		if player_list[i]["alive"] and player_alingment == "Lobisomens":
+			if player_list[i]["class"] == "cultist":
+				cultist_players[i] = player_list[i]
+			else:
+				evil_players[i] = player_list[i]
+	
+	#Pega um dos cultistas e transforma em lobisomem
+	for i in cultist_players:
+		player_list[i]["class"] = "werewolf"
+		return
+	
+	#Se não tiver cultista, pega um dos outros do mal e transforma
+	# warning-ignore:unreachable_code
+	for i in evil_players:
+		player_list[i]["class"] = "werewolf"
+		return
+
+#Reseta as informações do jogador
+func clear_info():
+	#Lista de informações de outros jogadores e minhas informações
+	my_info["alive"] = true
+	my_info["votes"] = 0
+	my_info["revealed"] = false
+	my_info["actions"] = 3
+	my_info["healed"] = false
+	my_info["guarded"] = false
+	my_info["roleblock"] = false
+	my_info["guard"] = 0
+	night_info = ""
+	skill_info = ""
+
 ######### Criar todas as classes do jogo e suas distribuições #########
 func populate_class_maps():
 	# Classes da Cidade
-	classes["leader"] = {"alignment": "Cidade", "name": "Líder", "skill": ""}
-	classes["detective"] = {"alignment": "Cidade", "name": "Detetive", "skill": ""}
-	classes["observer"] = {"alignment": "Cidade", "name": "Observador", "skill": ""}
+	classes["leader"] = {"alignment": "Cidade", "name": "Líder", "skill": "Durante a noite pode se selecionar para revelar que é o Líder da Cidade."}
+	classes["detective"] = {"alignment": "Cidade", "name": "Detetive", "skill": "Selecione alguém para ver seu alinhamento!"}
+	classes["observer"] = {"alignment": "Cidade", "name": "Aldeão", "skill": "Ajude a Cidade a eliminar todos os lobisomens!"}
 	classes["messenger"] = {"alignment": "Cidade", "name": "Mensageiro", "skill": ""}
-	classes["hunter"] = {"alignment": "Cidade", "name": "Caçador", "skill": ""}
-	classes["captain"] = {"alignment": "Cidade", "name": "Capitão", "skill": ""}
-	classes["alchemist"] = {"alignment": "Cidade", "name": "Alquimista", "skill": ""}
-	classes["guard"] = {"alignment": "Cidade", "name": "Guarda", "skill": ""}
+	classes["hunter"] = {"alignment": "Cidade", "name": "Caçador", "skill": "Escolha algúem para eliminar. Mas cuidado, você só possui três balas!"}
+	classes["captain"] = {"alignment": "Cidade", "name": "Capitão", "skill": "Você pode impedir alguém de utilizar a habilidade durante a noite."}
+	classes["alchemist"] = {"alignment": "Cidade", "name": "Alquimista", "skill": "Escolha alguém e impeça que ele seja eliminado."}
+	classes["guard"] = {"alignment": "Cidade", "name": "Guarda", "skill": "Escolha um jogador para proteger. Se ele for atacado, você será eliminado em seu lugar mas eliminará quem atacou!"}
 	
 	# Classes dos Lobisomens
-	classes["werewolf"] = {"alignment": "Lobisomens", "name": "Lobisomem", "skill": ""}
+	classes["werewolf"] = {"alignment": "Lobisomens", "name": "Lobisomem", "skill": "Escolha alguém da Cidade e o elimine!"}
 	classes["sorcerer"] = {"alignment": "Lobisomens", "name": "Feiticeiro", "skill": ""}
 	classes["elder"] = {"alignment": "Lobisomens", "name": "Ancião", "skill": ""}
 	classes["mimic"] = {"alignment": "Lobisomens", "name": "Mímico", "skill": ""}
-	classes["cultist"] = {"alignment": "Lobisomens", "name": "Cultista", "skill": ""}
+	classes["cultist"] = {"alignment": "Lobisomens", "name": "Cultista", "skill": "Ajude os lobisomens a eliminar a Cidade inteira!"}
 	
 	# Classes Neutras
 	classes["fugitive"] = {"alignment": "Neutro", "name": "Fugitivo", "skill": ""}
@@ -634,29 +746,27 @@ func populate_class_maps():
 	classes["stalker"] = {"alignment": "Neutro", "name": "Suicida", "skill": ""}
 	classes["suicidal"] = {"alignment": "Neutro", "name": "Stalker", "skill": ""}
 	
-	choice_sets.append(["leader", "detective", "observer", "messenger"])
-	choice_sets.append(["leader", "detective", "hunter"])
-	choice_sets.append(["detective", "observer", "messenger"])
-	choice_sets.append(["captain", "hunter"])
-	choice_sets.append(["alchemist", "guard"])
-	choice_sets.append(["leader", "detective", "observer", "messenger", "hunter", "captain", "alchemist", "guard"])
+	#Apenas esses possuem habilidades
+	choice_sets.append(["leader", "detective", "alchemist", "captain"])
+	choice_sets.append(["hunter", "guard"])
+	#Utilizando pra nenhuma habilidade
+	choice_sets.append(["observer"])
+	#Apenas um do mal com habilidade
 	choice_sets.append(["werewolf"])
-	choice_sets.append(["sorcerer", "elder", "mimic"])
 	choice_sets.append(["cultist"])
-	choice_sets.append(["fugitive", "outsider", "avenger", "stalker", "suicidal"])
 	
-	var choices_for_5_players  = "1001101100"#"0000011000"
-	var choices_for_6_players  = "0111101100"
-	var choices_for_7_players  = "0111101101"
-	var choices_for_8_players  = "0111111101"
-	var choices_for_9_players  = "0111111111"
-	var choices_for_10_players = "0121111111"
-	var choices_for_11_players = "0121121111"
-	var choices_for_12_players = "0121121211"
-	var choices_for_13_players = "0121221211"
-	var choices_for_14_players = "0121221212"
-	var choices_for_15_players = "0121221222"
-	var choices_for_16_players = "0121231222"
+	var choices_for_5_players  = "21011"
+	var choices_for_6_players  = "21111"
+	var choices_for_7_players  = "21112"
+	var choices_for_8_players  = "31112"
+	var choices_for_9_players  = "31113"
+	var choices_for_10_players = "32113"
+	var choices_for_11_players = "32114"
+	var choices_for_12_players = "32214"
+	var choices_for_13_players = "32215"
+	var choices_for_14_players = "42215"
+	var choices_for_15_players = "42216"
+	var choices_for_16_players = "43216"
 	
 	choice_masks.append(choices_for_5_players) #0 + 5 = 5
 	choice_masks.append(choices_for_6_players) #1

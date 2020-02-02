@@ -7,8 +7,9 @@ const player_tag = preload("res://resources/instances/PlayerTag.tscn")
 
 onready var node_list = $PlayersList/VBoxContainer
 onready var timer = $Timer
-onready var host_btns = $HostBtns
 onready var client_btns = $ClientBtns
+onready var host_btns = $HostBtns
+onready var start_btn = $HostBtns/Start
 
 var player_list
 var creating_match
@@ -26,6 +27,8 @@ func _ready():
 	else:
 		client_btns.set_visible(true)
 	load_players()
+	
+	LobbyManager.clear_info()
 
 func _on_changed_lobby():
 	load_players()
@@ -39,6 +42,11 @@ func load_players():
 		node.get_node("Name").set_text(player_list[i]["name"])
 		node.rect_min_size = Vector2(node_list.get_parent().get_size().x, node.get_size().y)
 		node_list.add_child(node)
+	
+	if LobbyManager.get_players_quant() < 5:
+		start_btn.set_disabled(true)
+	else:
+		start_btn.set_disabled(false)
 
 #Limpa os nomes dos jogadores
 func clear_nodes():

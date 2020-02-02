@@ -1,8 +1,8 @@
 extends Control
 
 #Tempo do dia em segundos
-const DAY_TIMER = 80#5
-const WAIT_TIME = 3000 #ms
+const DAY_TIMER = 80
+const WAIT_TIME = 8000 #ms
 const VOTING_PATH = "res://scenes/MatchVoting.tscn"
 
 onready var top = $Top
@@ -51,6 +51,7 @@ func _on_Timer_timeout():
 	
 	#Começa o timer para trocar de tela
 	top.start_timer(DAY_TIMER)
+	OS.delay_msec(50)
 	
 	#Calcula se houve algum vencedor
 	LobbyManager.check_winner()

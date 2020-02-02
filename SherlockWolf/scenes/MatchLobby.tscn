@@ -47,7 +47,6 @@ scroll_horizontal_enabled = false
 [node name="Timer" type="Timer" parent="."]
 
 [node name="HostBtns" type="Control" parent="."]
-editor/display_folded = true
 visible = false
 anchor_left = 0.5
 anchor_top = 1.0

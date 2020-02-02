@@ -48,7 +48,6 @@ alignment = 1
 visible = false
 
 [node name="PopupNight" type="Control" parent="."]
-editor/display_folded = true
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -95,7 +94,7 @@ margin_right = 196.0
 margin_bottom = 331.5
 custom_fonts/font = SubResource( 2 )
 custom_colors/font_color = Color( 0.192157, 0.192157, 0.192157, 1 )
-text = "Não aconteceu nada."
+autowrap = true
 
 [node name="Timer" type="Timer" parent="PopupNight"]
 wait_time = 3.0
