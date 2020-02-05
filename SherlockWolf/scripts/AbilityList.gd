@@ -3,6 +3,7 @@ extends ScrollContainer
 const player_tag = preload("res://resources/instances/PlayerBtn.tscn")
 
 onready var node_list = $VBoxContainer
+onready var top_node  = get_parent().get_node("Top")
 
 #Carrega todos os nomes dos jogadores
 func load_players():
@@ -11,6 +12,13 @@ func load_players():
 	var showing_alive = LobbyManager.get_showing_alive()
 	var player_list = LobbyManager.get_players()
 	var player_ok
+	
+	if showing_alive:
+		top_node.set_dead_btn(false)
+		top_node.set_alive_btn(true)
+	else:
+		top_node.set_alive_btn(false)
+		top_node.set_dead_btn(true)
 	
 	for i in player_list:
 		player_ok = true
@@ -28,12 +36,12 @@ func load_players():
 			node.get_node("Name").set_text(player_list[i]["name"])
 			node.rect_min_size = Vector2(node_list.get_parent().get_size().x, node.get_size().y)
 			
-			#Se estiver na votação mostra o número de votos
-			if LobbyManager.get_current_phase() == LobbyManager.VOTING:
-				node.get_node("Vote").set_text(str(player_list[i]["votes"]))
-			
 			#Passa o filtro específico da classe para poder ser selecionado
 			if not AbilitiesManager.display_names(i, player_list[i], player_id, player_list[player_id]):
+				node.get_node("Button").set_visible(false)
+			
+			#Se for o alvo selecionado, deixa não selecionável
+			if i == LobbyManager.get_selected_player():
 				node.get_node("Button").set_disabled(true)
 			
 			#Se estiver morto, tira o botão completamente

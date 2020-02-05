@@ -43,10 +43,10 @@ func load_players():
 		node.rect_min_size = Vector2(node_list.get_parent().get_size().x, node.get_size().y)
 		node_list.add_child(node)
 	
-	#if LobbyManager.get_players_quant() < 5:
-	#	start_btn.set_disabled(true)
-	#else:
-	#	start_btn.set_disabled(false)
+	if LobbyManager.get_players_quant() < 5:
+		start_btn.set_disabled(true)
+	else:
+		start_btn.set_disabled(false)
 
 #Limpa os nomes dos jogadores
 func clear_nodes():

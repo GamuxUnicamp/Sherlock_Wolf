@@ -22,8 +22,7 @@ func _on_match_found():
 	for i in server_list:
 		var node = server_button.instance()
 		var node_name = server_list[i]["ip"].format({".": "a"}, ".")
-		node.get_node("Name").set_text(server_list[i]["name"])
-		node.get_node("Ip").set_text(server_list[i]["ip"])
+		node.get_node("Name").set_text("Partida de " + server_list[i]["name"])
 		node.set_name(node_name)
 		node.rect_min_size = Vector2(node_list.get_parent().get_size().x, node.get_size().y)
 		node_list.add_child(node)

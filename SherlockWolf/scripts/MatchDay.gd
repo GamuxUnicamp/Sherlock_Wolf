@@ -1,8 +1,8 @@
 extends Control
 
 #Tempo do dia em segundos
-const DAY_TIMER = 80
-const WAIT_TIME = 8000 #ms
+const DAY_TIMER = 60
+const WAIT_TIME = 15 * 1000 #segundos * 1000
 const VOTING_PATH = "res://scenes/MatchVoting.tscn"
 
 onready var top = $Top
@@ -12,6 +12,7 @@ onready var popup_night = $PopupNight
 onready var popup_info = $PopupNight/Info
 onready var popup_timer = $PopupNight/Timer
 onready var popup_end = $EndGame
+onready var popup_class_info = $InfoBtn
 
 ######### Controle do Período #########
 func _ready():
@@ -26,6 +27,10 @@ func _ready():
 	if LobbyManager.get_paused():
 		popup_quit.set_visible(true)
 	
+	#Checando se o jogador estava vendo as informações da classe
+	if LobbyManager.get_info_showing():
+		popup_class_info.set_popup_visibility(true)
+	
 	#Coloca os jogadores na tela
 	node_list.load_players()
 	
@@ -38,7 +43,7 @@ func _ready():
 	
 	#Mostra quem morreu durante a noite e informações obtidas
 	popup_night.set_visible(true)
-	popup_info.set_text(LobbyManager.get_skill_info() + LobbyManager.get_night_info())
+	popup_info.set_text(LobbyManager.get_skill_info() + "\n" + LobbyManager.get_night_info())
 	popup_timer.start()
 
 #Quando o jogador selecionar o botão para exibir jogadores vivos ou eliminados

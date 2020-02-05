@@ -181,7 +181,7 @@ func confirm_ability(target_id, target_info, player_id, player_info):
 	
 	#Se o jogador foi preso durante essa noite, não executa skill
 	if LobbyManager.get_roleblocked(player_id):
-		LobbyManager.set_night_info("Você foi preso e não conseguiu executar sua habilidade.")
+		LobbyManager.set_skill_info(player_id, "Você foi preso e não conseguiu executar sua habilidade.")
 		return
 	
 	match player_alingment:

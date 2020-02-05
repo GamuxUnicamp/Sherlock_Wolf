@@ -7,10 +7,10 @@ onready var popup_error = $PopUpError
 onready var popup_error2 = $PopUpError2
 
 onready var popup_join = $PopUpJoin
-onready var name_join = $PopUpJoin/Name
+onready var name_join = $PopUpJoin/BG/Name
 
 onready var popup_host = $PopUpHost
-onready var name_host = $PopUpHost/Name
+onready var name_host = $PopUpHost/BG/Name
 
 func _ready():
 	# warning-ignore:return_value_discarded

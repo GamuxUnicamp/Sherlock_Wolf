@@ -8,6 +8,7 @@ const TRIAL_PATH = "res://scenes/MatchTrial.tscn"
 onready var top = $Top
 onready var node_list = $PlayersList
 onready var popup_quit = $PopupQuit
+onready var popup_info = $InfoBtn
 
 ######### Controle do Período #########
 func _ready():
@@ -20,6 +21,10 @@ func _ready():
 	#Checando se o jogador tinha pausado
 	if LobbyManager.get_paused():
 		popup_quit.set_visible(true)
+	
+	#Checando se o jogador estava vendo as informações da classe
+	if LobbyManager.get_info_showing():
+		popup_info.set_popup_visibility(true)
 	
 	#Coloca os jogadores na tela
 	node_list.load_players()

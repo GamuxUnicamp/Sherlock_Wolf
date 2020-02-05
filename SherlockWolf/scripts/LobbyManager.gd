@@ -20,6 +20,7 @@ signal end_game
 #Lista de informações de outros jogadores e minhas informações
 var player_list = {}
 var my_info = {"name": "", "class": "", "alive" : true, "votes": 0, "revealed": false, "actions": 3, "healed": false, "guarded": false, "roleblock": false, "guard": 0}
+var selected_player = 0
 var night_info = ""
 var skill_info = ""
 var creating_match = false
@@ -35,6 +36,7 @@ var server_list = {}
 var quant_servers = 0
 var current_day = 0
 var paused = false
+var info_showing = false
 var skills_queue = {"1": {}, "2": {}, "3": {}, "4": {}, "5": {}}
 
 enum {NIGHT, DAY, VOTING, TRIAL}
@@ -637,6 +639,13 @@ func get_paused():
 func set_paused(value):
 	paused = value
 
+#Getter e setter para se o jogador está vendo as informações
+func get_info_showing():
+	return info_showing
+
+func set_info_showing(value):
+	info_showing = value
+
 #Limpa todas as variaveis
 func reset_variables():
 	player_list = {}
@@ -725,6 +734,14 @@ func clear_info():
 	my_info["guard"] = 0
 	night_info = ""
 	skill_info = ""
+	selected_player = 0
+
+#Getter e Setter para o alvo selecionado
+func get_selected_player():
+	return selected_player
+
+func set_selected_player(value):
+	selected_player = value
 
 ######### Criar todas as classes do jogo e suas distribuições #########
 func populate_class_maps():
@@ -761,7 +778,7 @@ func populate_class_maps():
 	choice_sets.append(["werewolf"])
 	choice_sets.append(["cultist"])
 	
-	var choices_for_5_players  = "21011"#"00110"
+	var choices_for_5_players  = "21011"
 	var choices_for_6_players  = "21111"
 	var choices_for_7_players  = "21112"
 	var choices_for_8_players  = "31112"
@@ -790,3 +807,6 @@ func populate_class_maps():
 
 func get_class_alignment(player_class):
 	return classes[player_class]["alignment"]
+
+func get_class_name(player_class):
+	return classes[player_class]["name"]

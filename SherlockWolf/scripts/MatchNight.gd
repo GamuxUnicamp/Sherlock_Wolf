@@ -7,6 +7,7 @@ const DAY_PATH = "res://scenes/MatchDay.tscn"
 onready var top = $Top
 onready var node_list = $PlayersList
 onready var popup_quit = $PopupQuit
+onready var popup_info = $InfoBtn
 
 ######### Controle do Período #########
 func _ready():
@@ -28,6 +29,10 @@ func _ready():
 	#Checando se o jogador tinha pausado
 	if LobbyManager.get_paused():
 		popup_quit.set_visible(true)
+	
+	#Checando se o jogador estava vendo as informações da classe
+	if LobbyManager.get_info_showing():
+		popup_info.set_popup_visibility(true)
 	
 	#Coloca os jogadores na tela
 	node_list.load_players()
@@ -56,6 +61,11 @@ func _on_night_ended():
 
 ######### Seleção de Habilidade #########
 func select_player(target_id):
+	#Quando o jogador usar a habilidade marca ele e ajusta a lista
+	LobbyManager.set_selected_player(target_id)
+	node_list.load_players()
+	
+	#Manda as informações como pedido para a habilidade
 	var target_info = LobbyManager.get_player_info(target_id)
 	var player_id = LobbyManager.get_my_id()
 	var player_info = LobbyManager.get_my_info()

@@ -56,12 +56,21 @@ func set_day():
 	day_label.set_text("Dia " + str(LobbyManager.get_current_day()))
 
 ######### Botões #########
+onready var alive_btn = $AliveBtn
+onready var dead_btn = $DeadBtn
+
 #Trocar se o jogador está vendo a lista de jogadores vivos ou eliminados
 func _on_AliveBtn_pressed():
 	LobbyManager.set_showing_alive(true)
 
 func _on_DeadBtn_pressed():
 	LobbyManager.set_showing_alive(false)
+
+func set_alive_btn(value):
+	alive_btn.set_disabled(value)
+
+func set_dead_btn(value):
+	dead_btn.set_disabled(value)
 
 #Botão de pausar
 signal game_paused
