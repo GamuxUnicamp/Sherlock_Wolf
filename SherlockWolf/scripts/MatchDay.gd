@@ -1,7 +1,7 @@
 extends Control
 
 #Tempo do dia em segundos
-const DAY_TIMER = 60
+const DAY_TIMER = 80
 const WAIT_TIME = 15 * 1000 #segundos * 1000
 const VOTING_PATH = "res://scenes/MatchVoting.tscn"
 

@@ -10,6 +10,7 @@ onready var timer = $Timer
 onready var client_btns = $ClientBtns
 onready var host_btns = $HostBtns
 onready var start_btn = $HostBtns/Start
+onready var label_min = $HostBtns/LabelMin
 
 var player_list
 var creating_match
@@ -44,8 +45,10 @@ func load_players():
 		node_list.add_child(node)
 	
 	if LobbyManager.get_players_quant() < 5:
+		label_min.set_visible(true)
 		start_btn.set_disabled(true)
 	else:
+		label_min.set_visible(false)
 		start_btn.set_disabled(false)
 
 #Limpa os nomes dos jogadores

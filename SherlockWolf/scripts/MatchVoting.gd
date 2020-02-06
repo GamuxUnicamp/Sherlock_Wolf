@@ -1,7 +1,7 @@
 extends Control
 
 #Tempo da votação em segundos
-const VOTE_TIMER = 20
+const VOTE_TIMER = 30
 const NIGHT_PATH = "res://scenes/MatchNight.tscn"
 const TRIAL_PATH = "res://scenes/MatchTrial.tscn"
 
