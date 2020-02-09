@@ -12,7 +12,9 @@ Durante a *manhã* os jogadores devem interagir entre si para discutir informaç
 Durante a *votação* será dada a oportunidade para os jogadores de eliminarem algum jogador. Não é obrigatório a eliminação durante a *votação*.
 
 Jogadores mínimos: 5
+
 Jogadores máximos: 16
+
 (Todo jogador deve ter um nome com mais de 3 caracteres)
 
 ### Instalação
