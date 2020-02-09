@@ -27,4 +27,10 @@ Após o feito o *download* do *apk*, basta executá-lo em seu celular que o mesm
 |Aldeão|---|
 |Lobisomem|Elimina um jogador da Cidade|
 |Cultista|---|
+
 (Ainda em desenvolvimento)
+
+### Telas do Jogo
+|Noite|Manhã|Votação|
+|-----|-----|-------|
+|![Tela da Noite](/Screenshots/Noite.jpg)|![Tela da Manhã](/Screenshots/Manhã.jpg)|![Tela da Votação](/Screenshots/Votação.jpg)|
