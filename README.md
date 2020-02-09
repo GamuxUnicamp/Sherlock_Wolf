@@ -11,6 +11,10 @@ Durante a *manhã* os jogadores devem interagir entre si para discutir informaç
 
 Durante a *votação* será dada a oportunidade para os jogadores de eliminarem algum jogador. Não é obrigatório a eliminação durante a *votação*.
 
+Jogadores mínimos: 5
+Jogadores máximos: 16
+(Todo jogador deve ter um nome com mais de 3 caracteres)
+
 ### Instalação
 Para jogar é necessário um dispositivo *andoird* e acesso à rede *wi-fi*.
 Após o feito o *download* do *apk*, basta executá-lo em seu celular que o mesmo já será intalado.
